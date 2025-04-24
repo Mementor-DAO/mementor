@@ -1,0 +1,79 @@
+type BTreeMap = vec record {
+  text;
+  variant {
+    Int : int;
+    Map : BTreeMap;
+    Nat : nat;
+    Nat64 : nat64;
+    Blob : blob;
+    Text : text;
+    Array : vec Value;
+  };
+};
+type Coin = record { ty : CoinType; canister_id : principal };
+type CoinConfig = record { minter_canister_id : principal };
+type CoinType = variant { IcpLedger; Icrc1 };
+type HttpRequest = record {
+  url : text;
+  method : text;
+  body : blob;
+  headers : vec record { text; text };
+};
+type HttpResponse = record {
+  body : blob;
+  headers : vec record { text; text };
+  upgrade : opt bool;
+  status_code : nat16;
+};
+type ImageInsertRequest = record { id : text; data : blob; mime_type : text };
+type ImageInsertResponse = variant {
+  ImageLoadingFailed;
+  ImageSizeTooBig;
+  ImageGenerationFailed;
+  NotAuthorized;
+  ThumbSizeTooBig;
+  Success : nat64;
+  ThumbGenerationFailed;
+};
+type InitOrUpgradeArgs = record {
+  memes_json_bytes : blob;
+  index_tar_bytes : blob;
+  meme_coin : Coin;
+  meme_nft_config : NftCollectionConfig;
+  oc_public_key : text;
+  meme_nft : NftCollection;
+  administrator : principal;
+  meme_coin_config : CoinConfig;
+};
+type NftCollection = record {
+  ty : NftCollectionType;
+  canister_id : principal;
+  url_template : text;
+  max_supply : nat32;
+};
+type NftCollectionConfig = record {
+  min_chat_members : nat32;
+  max_num_reactions : nat32;
+  team_fee_p : nat64;
+  min_num_reactions : nat32;
+  min_user_creation_interval : nat64;
+  max_minting_cost : nat64;
+  min_minting_cost : nat64;
+};
+type NftCollectionType = variant { Icrc7 };
+type Result = variant { Ok : vec vec record { text; Value }; Err : text };
+type Value = variant {
+  Int : int;
+  Map : BTreeMap;
+  Nat : nat;
+  Nat64 : nat64;
+  Blob : blob;
+  Text : text;
+  Array : vec Value;
+};
+service : (InitOrUpgradeArgs) -> {
+  get_nft_events : (nat32, nat32) -> (Result) query;
+  http_request : (HttpRequest) -> (HttpResponse) query;
+  http_request_update : (HttpRequest) -> (HttpResponse);
+  insert_image : (ImageInsertRequest) -> (ImageInsertResponse);
+}

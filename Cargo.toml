@@ -1,0 +1,54 @@
+[workspace]
+members = [
+    "packages/bot",
+    "packages/minter",
+]
+resolver = "2"
+
+[workspace.dependencies]
+candid = "0.10.10"
+ic-cdk = "0.17.0"
+ic-cdk-timers = "0.11.0"
+ic-http-certification = "2.5.0"
+ic-wasi-polyfill = "0.6.4"
+icrc-ledger-types = "0.1.5"
+ic-stable-structures = "0.6.7"
+ic-ledger-types = "0.14.0"
+canfund = "0.8.2"
+async-trait = "0.1.86"
+serde = "1.0.217"
+serde_json = "1.0.138"
+rmp-serde = "1.3.0"
+getrandom = {version = "0.2.15", features = ["custom"]}
+rand = "0.8.5"
+sha2 = "0.10.8"
+crc32fast = "1.4.2"
+hex = "0.4.3"
+regex = "1.11"
+futures = "0.3"
+image = {version = "0.25.5", default-features = false, features = ["jpeg"]}
+fontdue = {version = "0.9.3", default-features = false, features = ["std"]}
+tiny-skia = {version = "0.11.4", default-features = false, features = ["std"]}
+ttf-parser = "0.25.1"
+bytemuck = "1.22.0"
+tar-no-std = {version = "0.3.2", features = ["alloc"]}
+dataurl = "0.1.2"
+clap = { version = "4.5.32", features = ["derive"] }
+ansi-to-html = {version = "0.2.2", default-features = false}
+shell-words = "1.1.0"
+crypto-bigint = {version = "0.6.1", default-features = false, features = ["serde"]}
+oc_bots_sdk = {git = "https://github.com/open-chat-labs/open-chat-bots.git"}
+oc_bots_sdk_canister = {git = "https://github.com/open-chat-labs/open-chat-bots.git"}
+user_canister = {git = "https://github.com/open-chat-labs/open-chat.git"}
+community_canister = {git = "https://github.com/open-chat-labs/open-chat.git"}
+group_canister = {git = "https://github.com/open-chat-labs/open-chat.git"}
+icrc7-types = {path = "./dependencies/icrc7_launchpad/src/icrc7_types"}
+
+[patch.crates-io]
+rmp-serde = { git = "https://github.com/hpeebles/msgpack-rust", rev = "832a3f48e67eea56c869715ae6e1045583dd011b" }
+
+[profile.release]
+lto = true
+opt-level = "s"
+codegen-units = 1
+debug = false

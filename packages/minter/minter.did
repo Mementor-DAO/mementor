@@ -1,0 +1,38 @@
+type BTreeMap = vec record {
+  text;
+  variant {
+    Int : int;
+    Map : BTreeMap;
+    Nat : nat;
+    Nat64 : nat64;
+    Blob : blob;
+    Text : text;
+    Array : vec Value;
+  };
+};
+type Coin = record { ty : CoinType; canister_id : principal };
+type CoinType = variant { Icrc1 };
+type Config = record {
+  max_owners_raffle : nat32;
+  team_fee : nat64;
+  treasury_fee : nat64;
+  meme_coin : Coin;
+  meme_nft : NftCollection;
+  administrator : principal;
+};
+type InitOrUpgradeArgs = record { config : Config };
+type NftCollection = record { ty : NftCollectionType; canister_id : principal };
+type NftCollectionType = variant { Icrc7 };
+type Result = variant { Ok : vec vec record { text; Value }; Err : text };
+type Value = variant {
+  Int : int;
+  Map : BTreeMap;
+  Nat : nat;
+  Nat64 : nat64;
+  Blob : blob;
+  Text : text;
+  Array : vec Value;
+};
+service : (InitOrUpgradeArgs) -> {
+  get_tx_events : (nat32, nat32) -> (Result) query;
+}

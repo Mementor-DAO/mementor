@@ -1,0 +1,47 @@
+{
+  "canisters": {
+    "bot": {
+      "candid": "packages/bot/bot.did",
+      "package": "bot",
+      "build": "./scripts/build-bot.sh",
+      "wasm": "target/wasm32-wasip1/release/bot.gz",
+      "type": "custom"
+    },
+    "minter": {
+      "candid": "packages/minter/minter.did",
+      "package": "minter",
+      "build": "./scripts/build-minter.sh",
+      "wasm": "target/wasm32-unknown-unknown/release/minter.gz",
+      "type": "custom"
+    },
+    "nft": {
+      "candid": "dependencies/icrc7_launchpad/src/icrc7/icrc7.did",
+      "package": "nft",
+      "build": "./scripts/build-nft.sh",
+      "wasm": "dependencies/icrc7_launchpad/target/wasm32-unknown-unknown/release/icrc7.gz",
+      "type": "custom"
+    },
+    "coin": {
+      "package": "coin",
+      "candid": "dependencies/icrc1_ledger/icrc1_ledger.did",
+      "wasm": "dependencies/icrc1_ledger/icrc1_ledger.gz",
+      "type": "custom"
+    }
+  },
+  "defaults": {
+    "build": {
+      "args": "",
+      "packtool": ""
+    }
+  },
+  "networks": {
+    "local": {
+      "bind": "127.0.0.1:8080",
+      "type": "ephemeral",
+      "replica": {
+        "subnet_type": "system"
+      }
+    }
+  },
+  "version": 1
+}

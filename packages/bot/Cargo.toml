@@ -1,0 +1,45 @@
+[package]
+name = "bot"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+candid = {workspace = true}
+ic-cdk = {workspace = true}
+ic-cdk-timers = {workspace = true}
+ic-http-certification = {workspace = true}
+ic-stable-structures = {workspace = true}
+icrc-ledger-types = {workspace = true}
+ic-ledger-types = {workspace = true}
+ic-wasi-polyfill = {workspace = true}
+canfund = {workspace = true}
+async-trait = {workspace = true}
+serde = {workspace = true}
+serde_json = {workspace = true}
+rmp-serde = {workspace = true}
+rand = {workspace = true}
+getrandom = {workspace = true}
+sha2 = {workspace = true}
+crc32fast = {workspace = true}
+hex = {workspace = true}
+regex = {workspace = true}
+image = {workspace = true}
+tar-no-std = {workspace = true}
+fontdue = {workspace = true}
+tiny-skia = {workspace = true}
+ttf-parser = {workspace = true}
+bytemuck = {workspace = true}
+tantivy = {version = "0.22.0", default-features = false, features = ["lz4-compression"]}
+dataurl = {workspace = true}
+oc_bots_sdk = {workspace = true}
+oc_bots_sdk_canister = {workspace = true}
+user_canister = {workspace = true}
+group_canister = {workspace = true}
+community_canister = {workspace = true}
+icrc7-types = {workspace = true}
+clap = {workspace = true}
+shell-words = {workspace = true}
+ansi-to-html = {workspace = true}
