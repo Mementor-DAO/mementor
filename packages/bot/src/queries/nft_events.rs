@@ -10,7 +10,7 @@ use crate::{
 async fn get_nft_events(
     offset: u32,
     size: u32
-) -> Result<Vec<BTreeMap<String, Value>>, String> {
+) -> Result<(Vec<BTreeMap<String, Value>>, u32), String> {
 
     let events = EventStorage::slice(offset as _, size as _).iter()
         .map(|e| {
@@ -60,7 +60,9 @@ async fn get_nft_events(
         })
         .collect::<Vec<_>>();
     
-    Ok(events)
+    let total_events = EventStorage::size();
+    
+    Ok((events, total_events))
 }
 
 fn get_nft_logo(

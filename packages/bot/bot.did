@@ -61,7 +61,10 @@ type NftCollectionConfig = record {
   min_minting_cost : nat64;
 };
 type NftCollectionType = variant { Icrc7 };
-type Result = variant { Ok : vec vec record { text; Value }; Err : text };
+type Result = variant {
+  Ok : record { vec vec record { text; Value }; nat32 };
+  Err : text;
+};
 type Value = variant {
   Int : int;
   Map : BTreeMap;

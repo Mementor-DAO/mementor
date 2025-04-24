@@ -40,4 +40,11 @@ impl EventStorage {
 
         slice
     }
+
+    pub fn size(
+    ) -> u32 {
+        EVENTS.with_borrow(|events|
+            events.len() as u32
+        )
+    }
 }

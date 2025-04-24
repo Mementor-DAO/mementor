@@ -25,11 +25,12 @@ impl TransactionStorage {
         id: TxId,
         transaction: Transaction
     ) {
-        TXS_ORD.with_borrow_mut(|tx_ids| {
-            let _ = tx_ids.push(&id);
-        });
         TXS.with_borrow_mut(|txs| {
-            txs.insert(id, transaction)
+            if txs.insert(id.clone(), transaction).is_none() {
+                TXS_ORD.with_borrow_mut(|tx_ids| {
+                    let _ = tx_ids.push(&id);
+                });
+            }
         });
     }
 
@@ -60,5 +61,12 @@ impl TransactionStorage {
         });
 
         slice
+    }
+
+    pub fn size(
+    ) -> u32 {
+        TXS_ORD.with_borrow(|txs|
+            txs.len() as u32
+        )
     }
 }

@@ -9,7 +9,7 @@ use crate::{
 async fn get_tx_events(
     offset: u32,
     size: u32
-) -> Result<Vec<BTreeMap<String, Value>>, String> {
+) -> Result<(Vec<BTreeMap<String, Value>>, u32), String> {
 
     let txs: Vec<_> = TransactionStorage::slice(offset as _, size as _).iter()
         .map(|(id, tx)| {
@@ -68,6 +68,8 @@ async fn get_tx_events(
         })
         .collect();
     
-    Ok(txs)
+    let total_txs = TransactionStorage::size();
+
+    Ok((txs, total_txs))
 }
 
