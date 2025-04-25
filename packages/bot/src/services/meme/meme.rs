@@ -35,7 +35,7 @@ use crate::{
 pub const MAX_MEMES: usize = 4;
 const FONT_SIZE: f32 = 32.0; //px
 const PADDING: usize = 8;
-const CAPTION_CREATE_PROMPT: &str = "You're a meme expert. Given a meme with the image description: \"{description}\", create {num_boxes} short captions, each with no more than 3 words, that together tell a story. Be funny and creative! Return only the captions as a JSON array of strings";
+const CAPTION_CREATE_PROMPT: &str = "You're a meme expert. Given a meme with this image description: \"{description}\" and this usage suggestion: \"{usage}\", create {num_boxes} short captions, each with no more than 3 words, that together tell a story. Be funny and creative! Return only the captions as a JSON array of strings";
 
 pub type MemeTplId = u32;
 
@@ -305,6 +305,7 @@ impl MemeService {
         
         let prompt = CAPTION_CREATE_PROMPT
             .replace("{description}", &tpl.description.replace('"', "'"))
+            .replace("{usage}", &&tpl.usage.replace('"', "'"))
             .replace("{num_boxes}", &num_captions.to_string());
         
         let res = ic_llm::prompt(Model::Llama3_1_8B, prompt)
