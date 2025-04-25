@@ -95,8 +95,12 @@ impl CommandHandler<CanisterRuntime> for MemeCli {
                     Commands::Search { query } => {
                         Self::search_meme(query, &client)
                     },
-                    Commands::Gen { id, texts } => {
-                        Self::gen_meme(id, texts, user_id, &client)
+                    Commands::Gen { id, captions } => {
+                        Self::gen_meme(id, captions, user_id, &client)
+                    },
+                    Commands::Suggest { id } => {
+                        Self::suggest_meme(id, user_id, &client)
+                            .await
                     },
                     Commands::Post { id } => {
                         Self::post_meme(id, user_id, &client)
@@ -260,20 +264,18 @@ impl MemeCli {
 
     fn gen_meme(
         tpl_id: u32,
-        texts: Vec<String>,
+        captions: Vec<String>,
         user_id: Principal,
         client: &Client<CanisterRuntime, BotCommandContext>
     ) -> Result<SuccessResult, String> {
-        let tpl = meme::read(|s| 
+        if let Some(tpl) = meme::read(|s| 
             s.load(&tpl_id).cloned()
-        );
-
-        if let Some(tpl) = tpl {
+        ) {
             // gen the image
             let img = OutlinedFont::roboto(|font| {
                 rgba8_to_rgb8(&MemeService::gen_image(
                     &tpl, 
-                    &texts.iter().map(|t| t.to_uppercase()).collect(), 
+                    &captions.iter().map(|t| t.to_uppercase()).collect(), 
                     &font
                 ).unwrap())
             });
@@ -300,7 +302,7 @@ impl MemeCli {
             let meme_id = meme::mutate(|s| {
                 s.calc_id(
                     &tpl, 
-                    &texts
+                    &captions
                 )
             });
 
@@ -330,6 +332,24 @@ impl MemeCli {
                 client.context().message_id().unwrap()
             ).build().into())
         }
+        else {
+            Err("Unknown meme :/".to_string())
+        }
+    }
+
+    async fn suggest_meme(
+        tpl_id: u32,
+        user_id: Principal,
+        client: &Client<CanisterRuntime, BotCommandContext>
+    ) -> Result<SuccessResult, String> {
+        if let Some(tpl) = meme::read(|s| 
+            s.load(&tpl_id).cloned()
+        )  {
+            let captions = MemeService::gen_captions(&tpl)
+                .await?;
+
+            Self::gen_meme(tpl_id, captions, user_id, client)
+            }
         else {
             Err("Unknown meme :/".to_string())
         }

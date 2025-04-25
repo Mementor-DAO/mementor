@@ -255,6 +255,7 @@ dependencies = [
  "ic-cdk-timers 0.11.0",
  "ic-http-certification",
  "ic-ledger-types 0.14.0",
+ "ic-llm",
  "ic-stable-structures",
  "ic-wasi-polyfill",
  "icrc-ledger-types",
@@ -1332,6 +1333,17 @@ dependencies = [
  "serde",
  "serde_bytes",
  "sha2",
+]
+
+[[package]]
+name = "ic-llm"
+version = "1.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "609b6a1e0a8ce2bd4661360e4219d07c972b917cd54eb2bfad1d347805eea8c4"
+dependencies = [
+ "candid",
+ "ic-cdk 0.17.1",
+ "serde",
 ]
 
 [[package]]

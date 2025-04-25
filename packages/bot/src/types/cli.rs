@@ -24,8 +24,13 @@ pub enum Commands {
     Gen {
         #[arg(help = "Numeric id of the meme template as returned by '/meme search'")]
         id: u32,
-        #[arg(help = "Texts, separated by white-space, to be displayed on the image generated (single-quotes '...' preserve white-spaces)")]
-        texts: Vec<String>,
+        #[arg(help = "Captions, separated by white-space, to be displayed on the image (use single-quotes, ie: 'some caption', to preserve white-spaces)")]
+        captions: Vec<String>,
+    },
+    #[command(about = "Use AI to suggest captions and generate a meme from a template")]
+    Suggest {
+        #[arg(help = "Numeric id of the meme template as returned by '/meme search'")]
+        id: u32,
     },
     #[command(about = "Post a meme previously created with '/'meme gen'")]
     Post {

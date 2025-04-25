@@ -11,6 +11,7 @@ use tantivy::schema::{
     STORED 
 };
 use tiny_skia::Color;
+use ic_llm::Model;
 use crate::{
     storage::{
         image::ImageStorage, 
@@ -34,6 +35,7 @@ use crate::{
 pub const MAX_MEMES: usize = 4;
 const FONT_SIZE: f32 = 32.0; //px
 const PADDING: usize = 8;
+const CAPTION_CREATE_PROMPT: &str = "You're a meme expert. Given a meme with the image description: \"{description}\", create {num_boxes} short captions, each with no more than 3 words, that together tell a story. Be funny and creative! Return only the captions as a JSON array of strings";
 
 pub type MemeTplId = u32;
 
@@ -289,6 +291,29 @@ impl MemeService {
         let mut id = hex::encode_upper(&num256.as_slice());
         id.truncate(MEME_ID_SIZE);
         id
+    }
+    
+    pub async fn gen_captions(
+        tpl: &MemeTpl
+    ) -> Result<Vec<String>, String> {
+        let num_captions = if tpl.boxes.len() == 0 {
+            2
+        } 
+        else {
+            tpl.boxes.len()
+        };
+        
+        let prompt = CAPTION_CREATE_PROMPT
+            .replace("{description}", &tpl.description.replace('"', "'"))
+            .replace("{num_boxes}", &num_captions.to_string());
+        
+        let res = ic_llm::prompt(Model::Llama3_1_8B, prompt)
+            .await;
+
+        let captions: Vec<String> = serde_json::from_str(&res.trim())
+            .map_err(|err| err.to_string())?;
+
+        Ok(captions)
     }
 }
 

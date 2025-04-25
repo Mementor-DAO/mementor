@@ -15,6 +15,7 @@ ic-stable-structures = {workspace = true}
 icrc-ledger-types = {workspace = true}
 ic-ledger-types = {workspace = true}
 ic-wasi-polyfill = {workspace = true}
+ic-llm ={workspace = true}
 canfund = {workspace = true}
 async-trait = {workspace = true}
 serde = {workspace = true}
