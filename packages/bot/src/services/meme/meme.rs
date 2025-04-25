@@ -1,13 +1,14 @@
 use std::collections::HashMap;
 use ic_stable_structures::Storable;
 use image::{Rgba, RgbaImage};
-use sha2::{digest::generic_array::GenericArray, Digest, Sha256};
+use sha2::{
+    digest::generic_array::GenericArray, 
+    Digest, Sha256
+};
 use tantivy::schema::{
-    IndexRecordOption, 
-    OwnedValue, 
-    TextFieldIndexing, 
-    TextOptions, 
-    STORED, STRING
+    IndexRecordOption, OwnedValue, 
+    TextFieldIndexing, TextOptions, 
+    STORED 
 };
 use tiny_skia::Color;
 use crate::{
@@ -16,13 +17,15 @@ use crate::{
         thumb::ThumbStorage
     }, 
     types::{
+        meme::{MemeId, MEME_ID_SIZE}, 
         meme_tpl::{MemeTpl, MemeTplTextBox}, 
-        thumb::{THUMB_HEIGHT, THUMB_WIDTH}, 
-        meme::{MemeId, MEME_ID_SIZE}
+        thumb::{THUMB_HEIGHT, THUMB_WIDTH}
     }, 
     utils::{
         canvas::{Canvas, Point, TextOutline}, 
-        full_text_indexer::FullTextIndexer, 
+        full_text_indexer::{
+            Field, FieldOptions, FullTextIndexer
+        }, 
         out_font::OutlinedFont, 
         rng::gen_range 
     }
@@ -32,7 +35,7 @@ pub const MAX_MEMES: usize = 4;
 const FONT_SIZE: f32 = 32.0; //px
 const PADDING: usize = 8;
 
-pub type MemeTplId = String;
+pub type MemeTplId = u32;
 
 #[derive(Clone)]
 pub struct MemeService {
@@ -51,14 +54,14 @@ impl MemeService {
             memes_json_bytes.as_slice()
         ).unwrap()
             .iter()
-            .map(|m| (m.file.name.clone(), m.clone()))
+            .map(|m| (m.id, m.clone()))
             .collect::<HashMap<MemeTplId, MemeTpl>>();
         
         let finder = FullTextIndexer::from_tar(
             index_tar_bytes.to_vec().into_boxed_slice(), 
             "index/".to_string(),
             &Self::get_index_fields(),
-            "name"
+            "id"
         ).unwrap();
 
         Self {
@@ -69,7 +72,7 @@ impl MemeService {
     }
 
     fn get_index_fields(
-    ) -> Vec<(&'static str, TextOptions)> {
+    ) -> Vec<Field> {
         let text_en_stem = TextOptions::default()
             .set_indexing_options(
                 TextFieldIndexing::default()
@@ -78,52 +81,46 @@ impl MemeService {
             );
 
         vec![
-            ("name", STRING | STORED),
-            ("description", text_en_stem.clone()),
-            ("usage", text_en_stem.clone()),
-            ("keywords", text_en_stem),
+            Field { name: "id".to_string(), opts: FieldOptions::Numeric(STORED.into()) },
+            Field { name: "name".to_string(), opts: FieldOptions::Text(text_en_stem.clone()) },
+            Field { name: "description".to_string(), opts: FieldOptions::Text(text_en_stem.clone()) },
+            Field { name: "usage".to_string(), opts: FieldOptions::Text(text_en_stem.clone()) },
+            Field { name: "keywords".to_string(), opts: FieldOptions::Text(text_en_stem) },
         ]
     }
 
-    pub fn find_by_id(
+    pub fn load(
         &self,
         id: &MemeTplId
     ) -> Option<&MemeTpl> {
         self.memes.get(id)
     }
 
-    pub fn find_by_num(
-        &self,
-        num: u32
-    ) -> Option<&MemeTpl> {
-        self.memes.iter().find(|e| e.1.num == num).map(|e| e.1)
-    }
-
     pub fn search(
         &self,
         what: &str
     ) -> Vec<MemeTpl> {
-        let Ok(names) = self.finder.search(
+        let Ok(ids) = self.finder.search(
             what, 
-            &"name", 
+            &"id", 
             MAX_MEMES * 5,
             |v: &OwnedValue| {
                 match v {
-                    OwnedValue::Str(s) => s.to_string(),
-                    _ => "".to_string()
+                    OwnedValue::U64(s) => *s as u32,
+                    _ => 0
                 }
             })
         else {
             return vec![];
         };
 
-        let mut memes = names.iter()
-            .map(|name| {
-                self.memes.get(name)
+        let mut memes = ids.iter()
+            .map(|id| {
+                self.memes.get(id)
                     .cloned()
                     .unwrap_or_else(|| MemeTpl::default())
             })
-            .filter(|m| m.file.name.len() != 0)
+            .filter(|m| m.id != 0)
             .collect::<Vec<_>>();
 
         if memes.len() > MAX_MEMES {
@@ -156,8 +153,8 @@ impl MemeService {
 
         let mut x = PADDING;
         for meme in memes {
-            let num_text = meme.num.to_string();
-            if let Some(thumb) = ThumbStorage::load(&meme.file.name) {
+            let num_text = meme.id.to_string();
+            if let Some(thumb) = ThumbStorage::load(&meme.id) {
                 canvas.blit_image_at(&thumb, x as _, PADDING as _)
                     .map_err(|e| e.to_string())?;
 
@@ -187,7 +184,7 @@ impl MemeService {
         font: &OutlinedFont
     ) -> Result<RgbaImage, String> {
         
-        if let Some(mut img) = ImageStorage::load(&meme.file.name).clone() {
+        if let Some(mut img) = ImageStorage::load(&meme.id).clone() {
             Self::draw_texts(texts, meme, font, FONT_SIZE, &mut img);
             Ok(img)
         }
@@ -206,8 +203,8 @@ impl MemeService {
         let width = dest.width() as f32;
         let height = dest.height() as f32;
         
-        let hscale = width / meme.dim.width as f32;
-        let vscale = height / meme.dim.height as f32;
+        let hscale = width / meme.width as f32;
+        let vscale = height / meme.height as f32;
         
         let boxes = if meme.boxes.len() > 0 {
             meme.boxes.clone()
@@ -274,7 +271,7 @@ impl MemeService {
     ) -> MemeId {
         // 1st: hash any the relevant data
         let mut arr: Vec<Vec<u8>> = vec![
-            tpl.id.to_uppercase().to_bytes().to_vec(),
+            tpl.id.to_bytes().to_vec(),
         ];
         
         texts.iter().for_each(|t| 
@@ -288,7 +285,7 @@ impl MemeService {
         let mut num256 = GenericArray::from([0u8; 32]);
         self.hasher.finalize_into_reset(&mut num256);
 
-        // 2nd: trucate to MEME_ID_SIZE
+        // 2nd: truncate to MEME_ID_SIZE
         let mut id = hex::encode_upper(&num256.as_slice());
         id.truncate(MEME_ID_SIZE);
         id

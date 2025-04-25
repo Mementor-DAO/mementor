@@ -25,7 +25,7 @@ type HttpResponse = record {
   upgrade : opt bool;
   status_code : nat16;
 };
-type ImageInsertRequest = record { id : text; data : blob; mime_type : text };
+type ImageInsertRequest = record { id : nat32; data : blob; mime_type : text };
 type ImageInsertResponse = variant {
   ImageLoadingFailed;
   ImageSizeTooBig;
@@ -36,12 +36,12 @@ type ImageInsertResponse = variant {
   ThumbGenerationFailed;
 };
 type InitOrUpgradeArgs = record {
-  memes_json_bytes : blob;
-  index_tar_bytes : blob;
   meme_coin : Coin;
+  index_tar_gz : blob;
   meme_nft_config : NftCollectionConfig;
   oc_public_key : text;
   meme_nft : NftCollection;
+  memes_json_gz : blob;
   administrator : principal;
   meme_coin_config : CoinConfig;
 };

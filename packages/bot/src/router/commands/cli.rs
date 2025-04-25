@@ -96,7 +96,7 @@ impl CommandHandler<CanisterRuntime> for MemeCli {
                         Self::search_meme(query, &client)
                     },
                     Commands::Gen { id, texts } => {
-                        Self::gen_meme(id as _, texts, user_id, &client)
+                        Self::gen_meme(id, texts, user_id, &client)
                     },
                     Commands::Post { id } => {
                         Self::post_meme(id, user_id, &client)
@@ -259,13 +259,13 @@ impl MemeCli {
     }
 
     fn gen_meme(
-        num: u32,
+        tpl_id: u32,
         texts: Vec<String>,
         user_id: Principal,
         client: &Client<CanisterRuntime, BotCommandContext>
     ) -> Result<SuccessResult, String> {
         let tpl = meme::read(|s| 
-            s.find_by_num(num).cloned()
+            s.load(&tpl_id).cloned()
         );
 
         if let Some(tpl) = tpl {

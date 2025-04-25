@@ -23,7 +23,7 @@ pub async fn insert_image(
     match load_image(&args.data, &args.mime_type) {
         Some(img) => {
             let meme = meme::read(|s| {
-                s.find_by_id(&args.id).cloned().unwrap()
+                s.load(&args.id).cloned().unwrap()
             });
     
             match OutlinedFont::roboto(|font| ThumbStorage::gen_thumb(&img, &meme, font)) {

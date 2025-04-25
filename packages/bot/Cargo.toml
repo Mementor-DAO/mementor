@@ -43,3 +43,4 @@ icrc7-types = {workspace = true}
 clap = {workspace = true}
 shell-words = {workspace = true}
 ansi-to-html = {workspace = true}
+flate2 = {workspace = true}

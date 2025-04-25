@@ -9,3 +9,4 @@ pub mod out_font;
 pub mod msgpack;
 pub mod icrc1;
 pub mod nat;
+pub mod gz;

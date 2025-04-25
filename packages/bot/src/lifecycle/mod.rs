@@ -63,9 +63,9 @@ pub(crate) fn setup(
 
     // start the meme service
     meme::init(
-        args.memes_json_bytes, 
-        args.index_tar_bytes
-    );
+        args.memes_json_gz, 
+        args.index_tar_gz
+    )?;
 
     // create the nft service
     nft::mutate(|s| s.update(

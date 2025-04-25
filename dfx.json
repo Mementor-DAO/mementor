@@ -26,6 +26,20 @@
       "candid": "dependencies/icrc1_ledger/icrc1_ledger.did",
       "wasm": "dependencies/icrc1_ledger/icrc1_ledger.gz",
       "type": "custom"
+    },
+    "site": {
+      "site": {
+        "entrypoint": "packages/site/src/index.html"
+      },
+      "source": [
+        "packages/site/dist/"
+      ],
+      "type": "assets",
+      "gzip": true,
+      "declarations": {
+        "bindings": null,
+        "env_override": ""
+      }
     }
   },
   "defaults": {

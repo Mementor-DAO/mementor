@@ -246,6 +246,7 @@ dependencies = [
  "community_canister",
  "crc32fast",
  "dataurl",
+ "flate2",
  "fontdue",
  "getrandom 0.2.15",
  "group_canister",

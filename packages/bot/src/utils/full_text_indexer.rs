@@ -1,13 +1,23 @@
 use tantivy::{
     collector::TopDocs, 
     query::QueryParser, 
-    schema::{OwnedValue, Schema, TextOptions}, 
+    schema::{NumericOptions, OwnedValue, Schema, TextOptions}, 
     Index, 
     IndexReader, 
     ReloadPolicy, 
     TantivyDocument
 };
 use crate::utils::tardir::TarDirectory;
+
+pub enum FieldOptions {
+    Text(TextOptions),
+    Numeric(NumericOptions),
+}
+
+pub struct Field {
+    pub name: String,
+    pub opts: FieldOptions,
+}
 
 #[derive(Clone)]
 pub struct FullTextIndexer {
@@ -20,7 +30,7 @@ impl FullTextIndexer {
     pub fn from_tar(
         bytes: Box<[u8]>,
         root: String,
-        fields: &Vec<(&str, TextOptions)>,
+        fields: &Vec<Field>,
         id_field_name: &str
     ) -> Result<Self, String> {
         let schema = FullTextIndexer::_gen_schema(fields);
@@ -52,11 +62,18 @@ impl FullTextIndexer {
     }
 
     fn _gen_schema(
-        schema: &Vec<(&str, TextOptions)>
+        schema: &Vec<Field>
     ) -> Schema {
         let mut schema_builder = Schema::builder();
-        for (key, options) in schema {
-            schema_builder.add_text_field(key, options.clone());    
+        for field in schema {
+            match &field.opts {
+                FieldOptions::Text(options) => {
+                    schema_builder.add_text_field(&field.name, options.clone());
+                },
+                FieldOptions::Numeric(options) => {
+                    schema_builder.add_u64_field(&field.name, options.clone());
+                },
+            }
         }
         schema_builder.build()
     }

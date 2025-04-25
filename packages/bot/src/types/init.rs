@@ -9,8 +9,8 @@ use super::{
 pub struct InitOrUpgradeArgs {
     pub oc_public_key: String,
     pub administrator: Principal,
-    pub memes_json_bytes: Vec<u8>, 
-    pub index_tar_bytes: Vec<u8>,
+    pub memes_json_gz: Vec<u8>, 
+    pub index_tar_gz: Vec<u8>,
     pub meme_nft: NftCollection,
     pub meme_nft_config: NftCollectionConfig,
     pub meme_coin: Coin,

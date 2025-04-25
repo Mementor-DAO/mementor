@@ -23,7 +23,7 @@ pub enum Commands {
     #[command(about = "Generate a meme from a template")]
     Gen {
         #[arg(help = "Numeric id of the meme template as returned by '/meme search'")]
-        id: i64,
+        id: u32,
         #[arg(help = "Texts, separated by white-space, to be displayed on the image generated (single-quotes '...' preserve white-spaces)")]
         texts: Vec<String>,
     },
