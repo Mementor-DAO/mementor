@@ -305,7 +305,7 @@ impl MemeService {
         
         let prompt = CAPTION_CREATE_PROMPT
             .replace("{description}", &tpl.description.replace('"', "'"))
-            .replace("{usage}", &&tpl.usage.replace('"', "'"))
+            .replace("{usage}", &tpl.usage.replace('"', "'"))
             .replace("{num_boxes}", &num_captions.to_string());
         
         let res = ic_llm::prompt(Model::Llama3_1_8B, prompt)

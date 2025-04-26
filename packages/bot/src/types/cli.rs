@@ -5,7 +5,7 @@ use super::nft::NftId;
 #[command(
     name = "",
     version, 
-    about = "Mementor lets you create hilarious memes, mint them to exclusive MEME NFTs and mine MEME coins in return! 🎨🚀🔥", 
+    about = "Mementor lets you create hilarious memes, mint them as exclusive MEME NFTs, and earn MEME coins in return! 🎨🚀🔥", 
     long_about = None
 )]
 pub struct Cli {
