@@ -29,7 +29,7 @@ pub enum Commands {
         #[arg(help = "Captions, separated by white-space, to be displayed on the image (use single-quotes, ie: 'some caption', to preserve white-spaces)")]
         captions: Vec<String>,
     },
-    #[command(about = "Use AI to create a story and suggest captions to generate a meme from a template")]
+    #[command(about = "Use AI to create a story and suggest captions for generating a meme from a template")]
     Suggest {
         #[arg(help = "Numeric id of the meme template as returned by '/meme search'")]
         id: u32,
