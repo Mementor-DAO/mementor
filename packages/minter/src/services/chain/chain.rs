@@ -129,7 +129,7 @@ impl ChainService {
                 prev: chain.last_block_id.clone(),
                 merkle_root: Block::calc_merkle_root(&tx_ids),
                 timestamp: (block_ts / 1_000_000_000) as u32,
-                bits: 0xffffffff,
+                bits: 0xffffffff, // difficulty = 0
                 nonce: rng::gen(),
             },
             txs: tx_ids.clone(),
@@ -394,7 +394,13 @@ impl ChainService {
         let timestamp = (block_ts / 1_000_000_000) as u32;
 
         let team_fee = (block_reward * team_fee_p) / (100_000_000);
-        let treasury_fee = (block_reward * treasury_fee_p) / (100_000_000);
+
+        let treasury_fee = if owners.len() > 0 {
+            (block_reward * treasury_fee_p) / (100_000_000)
+        }
+        else {
+            block_reward - team_fee
+        };
 
         let mut txs = vec![
             Transaction{
