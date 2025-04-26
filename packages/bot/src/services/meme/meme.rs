@@ -27,15 +27,14 @@ use crate::{
         full_text_indexer::{
             Field, FieldOptions, FullTextIndexer
         }, 
-        out_font::OutlinedFont, 
-        rng::gen_range 
+        out_font::OutlinedFont
     }
 };
 
-pub const MAX_MEMES: usize = 4;
+pub const MEMES_PER_PAGE: usize = 4;
 const FONT_SIZE: f32 = 32.0; //px
 const PADDING: usize = 8;
-const CAPTION_CREATE_PROMPT: &str = "You're a meme expert. Given a meme with this image description: \"{description}\" and this usage suggestion: \"{usage}\", create {num_boxes} short captions, each with no more than 3 words, that together tell a story. Be funny and creative! Return only the captions as a JSON array of strings";
+const CAPTION_CREATE_PROMPT: &str = "You're a meme expert. Given a meme with this image description: \"{description}\" and this usage suggestion: \"{usage}\", create {num_boxes} short captions, each with no more than 3 words, that together tell a {mood} story about {topic}. Be funny and creative! Return only the captions as a JSON array of strings";
 
 pub type MemeTplId = u32;
 
@@ -100,12 +99,13 @@ impl MemeService {
 
     pub fn search(
         &self,
-        what: &str
-    ) -> Vec<MemeTpl> {
+        what: &str,
+        page: usize
+    ) -> (Vec<MemeTpl>, usize) {
         let Ok(ids) = self.finder.search(
             what, 
             &"id", 
-            MAX_MEMES * 5,
+            MEMES_PER_PAGE * 5,
             |v: &OwnedValue| {
                 match v {
                     OwnedValue::U64(s) => *s as u32,
@@ -113,10 +113,10 @@ impl MemeService {
                 }
             })
         else {
-            return vec![];
+            return (vec![], 0);
         };
 
-        let mut memes = ids.iter()
+        let memes = ids.iter()
             .map(|id| {
                 self.memes.get(id)
                     .cloned()
@@ -125,17 +125,22 @@ impl MemeService {
             .filter(|m| m.id != 0)
             .collect::<Vec<_>>();
 
-        if memes.len() > MAX_MEMES {
-            let mut out = vec![];
-            while out.len() < MAX_MEMES {
-                let index = gen_range(0..memes.len());
-                out.push(memes.swap_remove(index));
-            }
-            out
+        let num_pages = (memes.len() + MEMES_PER_PAGE - 1) / MEMES_PER_PAGE;
+
+        let page = if num_pages > 0 {
+            page.min(num_pages-1)
         }
         else {
-            memes
-        }
+            0
+        };
+        
+        let memes = memes.iter()
+            .skip(page * MEMES_PER_PAGE)
+            .take(MEMES_PER_PAGE)
+            .cloned()
+            .collect::<Vec<_>>();
+        
+        (memes, num_pages)
     }
 
     pub fn gen_preview(
@@ -294,7 +299,9 @@ impl MemeService {
     }
     
     pub async fn gen_captions(
-        tpl: &MemeTpl
+        tpl: &MemeTpl,
+        mood: String,
+        topic: String
     ) -> Result<Vec<String>, String> {
         let num_captions = if tpl.boxes.len() == 0 {
             2
@@ -306,6 +313,8 @@ impl MemeService {
         let prompt = CAPTION_CREATE_PROMPT
             .replace("{description}", &tpl.description.replace('"', "'"))
             .replace("{usage}", &tpl.usage.replace('"', "'"))
+            .replace("{mood}", &mood.replace('"', "'"))
+            .replace("{topic}", &topic.replace('"', "'"))
             .replace("{num_boxes}", &num_captions.to_string());
         
         let res = ic_llm::prompt(Model::Llama3_1_8B, prompt)

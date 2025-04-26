@@ -92,15 +92,20 @@ impl CommandHandler<CanisterRuntime> for MemeCli {
         let res = match Cli::try_parse_from(args) {
             Ok(cli) => {
                 match cli.command {
-                    Commands::Search { query } => {
-                        Self::search_meme(query, &client)
+                    Commands::Search { query, page } => {
+                        Self::search_meme(query, page.max(1) - 1, &client)
                     },
                     Commands::Gen { id, captions } => {
                         Self::gen_meme(id, captions, user_id, &client)
                     },
-                    Commands::Suggest { id } => {
-                        Self::suggest_meme(id, user_id, &client)
-                            .await
+                    Commands::Suggest { id, mood, topic } => {
+                        Self::suggest_meme(
+                            id, 
+                            mood.unwrap_or("happy".to_string()), 
+                            topic.unwrap_or("crypto".to_string()), 
+                            user_id, 
+                            &client
+                        ).await
                     },
                     Commands::Post { id } => {
                         Self::post_meme(id, user_id, &client)
@@ -212,18 +217,26 @@ impl CommandHandler<CanisterRuntime> for MemeCli {
 impl MemeCli {
     fn search_meme(
         query: String,
+        page: usize, 
         client: &Client<CanisterRuntime, BotCommandContext>
     ) -> Result<SuccessResult, String> {
         // find the templates that match the query used
-        let tpls = meme::read(|s| 
-            s.search(query.as_str())
+        let (tpls, num_pages) = meme::read(|s| 
+            s.search(query.as_str(), page)
         );
 
         if tpls.len() > 0 {
             // create a preview with the memes found
             let preview = OutlinedFont::roboto(|font| {
-                rgba8_to_rgb8(&MemeService::gen_preview(&tpls, font).unwrap())
-            });
+                match MemeService::gen_preview(&tpls, font) {
+                    Ok(preview) => {
+                        Ok(rgba8_to_rgb8(&preview))
+                    },
+                    Err(err) => {
+                        Err(err)
+                    },
+                }
+            })?;
 
             let mut jpeg: Vec<u8> = Vec::new();
             preview.write_to(&mut Cursor::new(&mut jpeg), IMG_FORMAT)
@@ -247,7 +260,7 @@ impl MemeCli {
                     mime_type: IMG_FORMAT.to_mime_type().to_string(),
                     width: preview.width(),
                     height: preview.height(),
-                    caption: None,
+                    caption: Some(format!("Page {}/{}", page.min(num_pages-1)+1, num_pages)),
                     blob_reference: Some(BlobReference {
                         canister_id: env::canister_id(),
                         blob_id,
@@ -339,13 +352,15 @@ impl MemeCli {
 
     async fn suggest_meme(
         tpl_id: u32,
+        mood: String,
+        topic: String,
         user_id: Principal,
         client: &Client<CanisterRuntime, BotCommandContext>
     ) -> Result<SuccessResult, String> {
         if let Some(tpl) = meme::read(|s| 
             s.load(&tpl_id).cloned()
         )  {
-            let captions = MemeService::gen_captions(&tpl)
+            let captions = MemeService::gen_captions(&tpl, mood, topic)
                 .await?;
 
             Self::gen_meme(tpl_id, captions, user_id, client)
@@ -1016,15 +1031,14 @@ impl MemeCli {
 
         let minting_cost = nft_service.calc_minting_cost();
         let min_reactions = nft_service.calc_min_reactions();
-        let min_chat_members = nft_service.min_chat_members();
+        //let min_chat_members = nft_service.min_chat_members();
         let max_supply = nft_service.col.max_supply;
         let total_supply = NftStorage::size();
 
         let text = format!(
-            "**MEME NFT Status**  \n- minting cost: **{:.8} ICP**  \n- min reactions: {}  \n- min chat members: {}  \n- total supply: {}  \n- max supply: {}  \n",
+            "**MEME NFT Status**  \n- minting cost: **{:.8} ICP**  \n- min reactions: {}  \n- supply: {}/{}  \n",
             minting_cost as f32 / 1_00000000.0,
             min_reactions,
-            min_chat_members,
             total_supply,
             max_supply
         );

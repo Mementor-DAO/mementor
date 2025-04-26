@@ -19,6 +19,8 @@ pub enum Commands {
     Search {
         #[arg(help = "Query used to search for meme templates")]
         query: String,
+        #[arg(default_value_t = 1, help = "Optional page number (default = 1)")]
+        page: usize,
     },
     #[command(about = "Generate a meme from a template")]
     Gen {
@@ -27,10 +29,14 @@ pub enum Commands {
         #[arg(help = "Captions, separated by white-space, to be displayed on the image (use single-quotes, ie: 'some caption', to preserve white-spaces)")]
         captions: Vec<String>,
     },
-    #[command(about = "Use AI to suggest captions and generate a meme from a template")]
+    #[command(about = "Use AI to create a story and suggest captions to generate a meme from a template")]
     Suggest {
         #[arg(help = "Numeric id of the meme template as returned by '/meme search'")]
         id: u32,
+        #[arg(help = "The story mood to use, e.g.: happy, sad, weird, silly, etc (default happy)")]
+        mood: Option<String>,
+        #[arg(help = "The story topic, e.g.: crypto, cats, cars, etc (default crypto)")]
+        topic: Option<String>,
     },
     #[command(about = "Post a meme previously created with '/'meme gen'")]
     Post {
