@@ -175,9 +175,32 @@ impl<'a> Canvas<'a> {
             );
         }
 
-        let mut row_y = f32::MIN;
         let x = x as f32;
         let y = y as f32;
+
+        if outline.is_some() {
+            let mut row_y = f32::MIN;
+            for (i, char) in text.chars().enumerate() {
+                let gid = font.font.lookup_glyph_index(char);
+                if let Some((glyph, _bbox)) = font.glyphs.get(&GlyphId(gid)) {
+                    let gpos = &layout.glyphs()[i];
+                    if (row_y - gpos.y).abs() > height {
+                        row_y = gpos.y;
+                    }
+                    let transf = Transform::from_scale(scale, scale)
+                        .post_translate(
+                            x + gpos.x, 
+                            y + row_y + height / 2.0
+                        );
+
+                    pixmap.stroke_path(
+                        &glyph.path, &stroke_paint, &stroke, transf, None
+                    );
+                }
+            }
+        }
+
+        let mut row_y = f32::MIN;
         for (i, char) in text.chars().enumerate() {
             let gid = font.font.lookup_glyph_index(char);
             if let Some((glyph, _bbox)) = font.glyphs.get(&GlyphId(gid)) {
@@ -190,12 +213,6 @@ impl<'a> Canvas<'a> {
                         x + gpos.x, 
                         y + row_y + height / 2.0
                     );
-
-                if outline.is_some() {
-                    pixmap.stroke_path(
-                        &glyph.path, &stroke_paint, &stroke, transf, None
-                    );
-                }
 
                 pixmap.fill_path(
                     &glyph.path, &paint, FillRule::Winding, transf, None
