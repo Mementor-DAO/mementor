@@ -28,9 +28,9 @@ NFT_MIN_CHAT_MEMBERS=0 # chat where the meme was posted must have at least n mem
 NFT_MIN_USER_CREATION_INTERVAL=$((0*15*24*60*60*1000)) # a reaction only counts if the user reacting was created at least n days ago
 NFT_MIN_NUM_REACTIONS=0
 NFT_MAX_NUM_REACTIONS=10
-NFT_MIN_MINTING_COST=10000000 # 0.1 ICP in e8s
+NFT_MIN_MINTING_COST=100000000 # 1.0 ICP in e8s
 NFT_MAX_MINTING_COST=10000000000 # 100.0 ICP in e8s
-NFT_TEAM_FEE=10000000 # 10% in e8s
+NFT_TEAM_FEE=10000000 # 10% in e8s. 90% of the minting cost goes to treasury
 
 INDEX_GZ=$(od -t x1 -v -w1048576 -A n $ASSETS_DATA_DIR/index.gz | sed "s/ /\\\/g")
 MEMES_GZ=$(od -t x1 -v -w1048576 -A n $ASSETS_DATA_DIR/memes.gz | sed "s/ /\\\/g")
@@ -53,7 +53,6 @@ dfx deploy bot -v --identity default --with-cycles 10000000000000 --argument-fil
         max_supply = $NFT_MAX_SUPPLY;
         canister_id = principal \"$NFT_COL_CANISTER_ID\";
         url_template = \"$NFT_COL_URL_TEMPLATE\";
-        min_reactions = 2;
       };
       meme_nft_config = record { 
         min_num_reactions = $NFT_MIN_NUM_REACTIONS;
