@@ -32,6 +32,7 @@ use crate::{
 };
 
 pub const MEMES_PER_PAGE: usize = 4;
+const MAX_PAGES: usize = 10;
 const FONT_SIZE: f32 = 32.0; //px
 const PADDING: usize = 8;
 const CAPTION_CREATE_PROMPT: &str = "You're a meme expert. Given a meme with this image description: \"{description}\" and this usage suggestion: \"{usage}\", create {num_boxes} short captions, each with no more than 3 words, that together tell a {mood} story about {topic}. Be funny and creative! Return only the captions as a JSON array of strings";
@@ -105,7 +106,7 @@ impl MemeService {
         let Ok(ids) = self.finder.search(
             what, 
             &"id", 
-            MEMES_PER_PAGE * 5,
+            MEMES_PER_PAGE * MAX_PAGES,
             |v: &OwnedValue| {
                 match v {
                     OwnedValue::U64(s) => *s as u32,
