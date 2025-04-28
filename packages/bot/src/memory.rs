@@ -11,7 +11,7 @@ const TEMP_BLOBS: MemoryId          = MemoryId::new(4);
 const USERS: MemoryId               = MemoryId::new(5);
 const NFTS: MemoryId                = MemoryId::new(6);
 const MEME_TO_NFT: MemoryId         = MemoryId::new(7);
-const EVENTS: MemoryId              = MemoryId::new(9);
+const EVENTS: MemoryId              = MemoryId::new(8);
 
 pub type Memory = VirtualMemory<DefaultMemoryImpl>;
 
