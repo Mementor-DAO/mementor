@@ -42,8 +42,7 @@ crypto-bigint = {version = "0.6.1", default-features = false, features = ["serde
 oc_bots_sdk = {git = "https://github.com/open-chat-labs/open-chat-bots.git"}
 oc_bots_sdk_canister = {git = "https://github.com/open-chat-labs/open-chat-bots.git"}
 user_canister = {git = "https://github.com/open-chat-labs/open-chat.git"}
-community_canister = {git = "https://github.com/open-chat-labs/open-chat.git"}
-group_canister = {git = "https://github.com/open-chat-labs/open-chat.git"}
+local_user_index_canister = {git = "https://github.com/open-chat-labs/open-chat.git"}
 icrc7-types = {path = "./dependencies/icrc7_launchpad/src/icrc7_types"}
 
 [patch.crates-io]

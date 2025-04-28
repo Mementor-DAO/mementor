@@ -136,11 +136,11 @@ jnUOeSToRjGkl8jhFazqGDdDStDbry6+uJA8QCGRsKri4IgGf93bt+70nEsHCpNjI6YOtELSJCQdTo4K
     icrc2 = true;
   };
   archive_options = record {
-    num_blocks_to_archive = 1024;
+    num_blocks_to_archive = 1000;
     max_transactions_per_response = opt 64;
-    trigger_threshold = 4096;
+    trigger_threshold = 2000;
     max_message_size_bytes = null;
-    cycles_for_archive_creation = null;
+    cycles_for_archive_creation = opt 1_000_000_000_000;
     node_max_memory_size_bytes = null;
     controller_id = principal \"$BOT_CANISTER_ID\";
     more_controller_ids = null;

@@ -14,11 +14,9 @@ use oc_bots_sdk::{
     }, 
     oc_api::{
         actions::{
-            chat_events::{
+            chat_details, chat_events::{
                 self, EventsSelectionCriteria, EventsWindowArgs
-            }, 
-            send_message, 
-            ActionArgsBuilder
+            }, send_message, ActionArgsBuilder
         }, 
         client::Client
     }, 
@@ -50,7 +48,7 @@ use crate::{
     }, 
     utils::{
         image::{create_thumbnail, rgba8_to_rgb8}, 
-        oc::{get_num_chat_members, get_user_pub_profile}, 
+        oc::{get_chat_user_profile, get_user_pub_profile}, 
         out_font::OutlinedFont
     }
 };
@@ -637,8 +635,8 @@ impl MemeCli {
                 // check if post has enough reactions
                 let min_reactions = nft_service.calc_min_reactions();
                 let num_reactions = if min_reactions > 0 {
-                    Self::count_unique_reactions(
-                        &post, client
+                    Self::count_unique_reactions_from_poh_users(
+                        &post, chat, client
                     ).await
                 }
                 else {
@@ -647,7 +645,7 @@ impl MemeCli {
 
                 if num_reactions < min_reactions {
                     return Err(
-                        format!("Post has only **{}** reactions from different users created {} days ago or earlier. Expected at least **{}** reactions. Try harder 😎", 
+                        format!("Post has only **{}** reactions from different users created {} days ago or earlier who have proven to be unique individuals. Expected at least **{}** reactions. Try harder 😎", 
                             num_reactions, nft_service.min_user_creation_interval_in_days(), min_reactions)
                     );
                 }
@@ -655,7 +653,7 @@ impl MemeCli {
                 // check if group/channel has enough members
                 let min_chat_members = nft_service.min_chat_members();
                 let num_chat_members = if min_chat_members > 0 { 
-                    get_num_chat_members(chat).await.unwrap_or(u32::MAX)
+                    Self::get_num_chat_members(client).await.unwrap_or(u32::MAX)
                 }
                 else {
                     u32::MAX
@@ -663,7 +661,7 @@ impl MemeCli {
 
                 if num_chat_members < min_chat_members {
                     return Err(
-                        format!("The group/channel where the meme was posted has too few members: {} < {}", 
+                        format!("The group/channel where the meme was posted has only {} members. Expected at least {}", 
                             num_chat_members, min_chat_members)
                     );
                 }
@@ -782,8 +780,9 @@ impl MemeCli {
         }
     }
 
-    async fn count_unique_reactions(
+    async fn count_unique_reactions_from_poh_users(
         post: &UserPost,
+        chat: &Chat,
         client: &Client<CanisterRuntime, BotCommandContext>
     ) -> u32 {
         let initiator = client.context().command.initiator.clone();
@@ -822,16 +821,25 @@ impl MemeCli {
                 match users {
                     Some(users) => {
                         let now = ic_cdk::api::time() / 1_000_000;
+                        let min_user_creation_interval = nft::read(|s| s.min_user_creation_interval());
                         let mut count = 0;
                         for user in &users {
-                            match get_user_pub_profile(
-                                &Principal::from_text(user).unwrap()
-                            ).await {
+                            let user_id = Principal::from_text(user).unwrap();
+                            match get_user_pub_profile(&user_id).await {
                                 Some(prof) => {
                                     // only consider the reaction if user creation time is old enough
-                                    let min_user_creation_interval = nft::read(|s| s.min_user_creation_interval());
                                     if (now - prof.created) >= min_user_creation_interval {
-                                        count += 1;
+                                        // and if user has proof of humanity (and is not a bot)
+                                        match get_chat_user_profile(chat, &user_id).await {
+                                            Some(g_user) => {
+                                                if !g_user.user_type.is_bot() && 
+                                                    g_user.unique_person_proof.is_some() {
+                                                    count += 1;
+                                                }
+                                            },
+                                            None => {
+                                            }
+                                        }
                                     }
                                 },
                                 None => {
@@ -848,6 +856,24 @@ impl MemeCli {
             }
             _ => {
                 0
+            }
+        }
+    }
+
+    async fn get_num_chat_members(
+        client: &Client<CanisterRuntime, BotCommandContext>
+    ) -> Option<u32> {
+        match client.chat_details().execute_async().await {
+            Ok(chat_details::Response::Success(details)) => {
+                Some(details.member_count)
+            },
+            Err(err) => {
+                ic_cdk::println!("error: getting chat details: {}", err.1);
+                None
+            },
+            _ => {
+                ic_cdk::println!("error: getting chat details");
+                None
             }
         }
     }
@@ -1078,6 +1104,7 @@ impl MemeCli {
                 MessagePermission::Image
             ])).with_chat(&HashSet::from([
                 ChatPermission::ReadMessages,
+                ChatPermission::ReadChatDetails,
             ])),
             default_role: None,
             direct_messages: Some(true),

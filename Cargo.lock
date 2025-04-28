@@ -243,13 +243,11 @@ dependencies = [
  "candid",
  "canfund",
  "clap 4.5.35",
- "community_canister",
  "crc32fast",
  "dataurl",
  "flate2",
  "fontdue",
  "getrandom 0.2.15",
- "group_canister",
  "hex",
  "ic-cdk 0.17.1",
  "ic-cdk-timers 0.11.0",
@@ -261,6 +259,7 @@ dependencies = [
  "icrc-ledger-types",
  "icrc7-types",
  "image",
+ "local_user_index_canister",
  "oc_bots_sdk",
  "oc_bots_sdk_canister",
  "rand",
@@ -345,7 +344,7 @@ dependencies = [
 [[package]]
 name = "candid_gen"
 version = "0.1.0"
-source = "git+https://github.com/open-chat-labs/open-chat.git#2d50aed0918414f504a0a6ab4f9bb7084751aac5"
+source = "git+https://github.com/open-chat-labs/open-chat.git#13ba018a839e62edb59af889478c02bcd8853917"
 dependencies = [
  "quote",
  "syn 2.0.100",
@@ -373,7 +372,7 @@ dependencies = [
 [[package]]
 name = "canister_client"
 version = "0.1.0"
-source = "git+https://github.com/open-chat-labs/open-chat.git#2d50aed0918414f504a0a6ab4f9bb7084751aac5"
+source = "git+https://github.com/open-chat-labs/open-chat.git#13ba018a839e62edb59af889478c02bcd8853917"
 dependencies = [
  "candid",
  "canister_client_macros",
@@ -385,7 +384,15 @@ dependencies = [
 [[package]]
 name = "canister_client_macros"
 version = "0.1.0"
-source = "git+https://github.com/open-chat-labs/open-chat.git#2d50aed0918414f504a0a6ab4f9bb7084751aac5"
+source = "git+https://github.com/open-chat-labs/open-chat.git#13ba018a839e62edb59af889478c02bcd8853917"
+
+[[package]]
+name = "canister_time"
+version = "0.1.0"
+source = "git+https://github.com/open-chat-labs/open-chat.git#13ba018a839e62edb59af889478c02bcd8853917"
+dependencies = [
+ "ic0 0.24.0",
+]
 
 [[package]]
 name = "cc"
@@ -413,7 +420,7 @@ checksum = "baf1de4339761588bc0619e3cbc0120ee582ebb74b53b4efbf79117bd2da40fd"
 [[package]]
 name = "chat_events"
 version = "0.1.0"
-source = "git+https://github.com/open-chat-labs/open-chat.git#2d50aed0918414f504a0a6ab4f9bb7084751aac5"
+source = "git+https://github.com/open-chat-labs/open-chat.git#13ba018a839e62edb59af889478c02bcd8853917"
 dependencies = [
  "candid",
  "constants",
@@ -528,7 +535,7 @@ checksum = "5b63caa9aa9397e2d9480a9b13673856c78d8ac123288526c37d7839f2a86990"
 [[package]]
 name = "community_canister"
 version = "0.1.0"
-source = "git+https://github.com/open-chat-labs/open-chat.git#2d50aed0918414f504a0a6ab4f9bb7084751aac5"
+source = "git+https://github.com/open-chat-labs/open-chat.git#13ba018a839e62edb59af889478c02bcd8853917"
 dependencies = [
  "candid",
  "candid_gen",
@@ -550,7 +557,7 @@ checksum = "c2459377285ad874054d797f3ccebf984978aa39129f6eafde5cdc8315b612f8"
 [[package]]
 name = "constants"
 version = "0.1.0"
-source = "git+https://github.com/open-chat-labs/open-chat.git#2d50aed0918414f504a0a6ab4f9bb7084751aac5"
+source = "git+https://github.com/open-chat-labs/open-chat.git#13ba018a839e62edb59af889478c02bcd8853917"
 dependencies = [
  "candid",
  "types",
@@ -652,6 +659,45 @@ name = "ct-codecs"
 version = "1.1.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b916ba8ce9e4182696896f015e8a5ae6081b305f74690baa8465e35f5a142ea4"
+
+[[package]]
+name = "cycles_dispenser_canister"
+version = "0.1.0"
+source = "git+https://github.com/open-chat-labs/open-chat.git#13ba018a839e62edb59af889478c02bcd8853917"
+dependencies = [
+ "candid",
+ "candid_gen",
+ "human_readable",
+ "ic-ledger-types 0.15.0",
+ "serde",
+ "types",
+]
+
+[[package]]
+name = "cycles_dispenser_canister_c2c_client"
+version = "0.1.0"
+source = "git+https://github.com/open-chat-labs/open-chat.git#13ba018a839e62edb59af889478c02bcd8853917"
+dependencies = [
+ "candid",
+ "canister_client",
+ "cycles_dispenser_canister",
+ "ic-cdk 0.18.0",
+ "tracing",
+ "types",
+]
+
+[[package]]
+name = "cycles_dispenser_client"
+version = "0.1.0"
+source = "git+https://github.com/open-chat-labs/open-chat.git#13ba018a839e62edb59af889478c02bcd8853917"
+dependencies = [
+ "cycles_dispenser_canister",
+ "cycles_dispenser_canister_c2c_client",
+ "ic-cdk 0.18.0",
+ "ic-cdk-timers 0.12.0",
+ "tracing",
+ "types",
+]
 
 [[package]]
 name = "data-encoding"
@@ -818,7 +864,7 @@ dependencies = [
  "event_store_canister",
  "event_store_producer",
  "ic-cdk 0.18.0",
- "ic-cdk-timers 0.12.0-alpha.2",
+ "ic-cdk-timers 0.12.0",
  "ic_principal",
  "rand",
  "serde",
@@ -1042,7 +1088,7 @@ dependencies = [
 [[package]]
 name = "group_canister"
 version = "0.1.0"
-source = "git+https://github.com/open-chat-labs/open-chat.git#2d50aed0918414f504a0a6ab4f9bb7084751aac5"
+source = "git+https://github.com/open-chat-labs/open-chat.git#13ba018a839e62edb59af889478c02bcd8853917"
 dependencies = [
  "candid",
  "candid_gen",
@@ -1135,7 +1181,7 @@ dependencies = [
 [[package]]
 name = "human_readable"
 version = "0.1.0"
-source = "git+https://github.com/open-chat-labs/open-chat.git#2d50aed0918414f504a0a6ab4f9bb7084751aac5"
+source = "git+https://github.com/open-chat-labs/open-chat.git#13ba018a839e62edb59af889478c02bcd8853917"
 dependencies = [
  "candid",
  "hex",
@@ -1149,7 +1195,7 @@ dependencies = [
 [[package]]
 name = "human_readable_derive"
 version = "0.1.0"
-source = "git+https://github.com/open-chat-labs/open-chat.git#2d50aed0918414f504a0a6ab4f9bb7084751aac5"
+source = "git+https://github.com/open-chat-labs/open-chat.git#13ba018a839e62edb59af889478c02bcd8853917"
 dependencies = [
  "quote",
  "syn 2.0.100",
@@ -1256,9 +1302,9 @@ dependencies = [
 
 [[package]]
 name = "ic-cdk-timers"
-version = "0.12.0-alpha.2"
+version = "0.12.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "653b5e8a2f1f59fa36d8510c460fba21a372787ae9bd7162c6f872de19f98b2a"
+checksum = "647de2a321d15442c2a73597fd81f031af80624022f069844bf789a317889299"
 dependencies = [
  "candid",
  "futures",
@@ -1417,7 +1463,7 @@ dependencies = [
 [[package]]
 name = "icp_ledger_canister"
 version = "0.1.0"
-source = "git+https://github.com/open-chat-labs/open-chat.git#2d50aed0918414f504a0a6ab4f9bb7084751aac5"
+source = "git+https://github.com/open-chat-labs/open-chat.git#13ba018a839e62edb59af889478c02bcd8853917"
 dependencies = [
  "candid",
  "candid_gen",
@@ -1428,7 +1474,7 @@ dependencies = [
 [[package]]
 name = "icp_ledger_canister_c2c_client"
 version = "0.1.0"
-source = "git+https://github.com/open-chat-labs/open-chat.git#2d50aed0918414f504a0a6ab4f9bb7084751aac5"
+source = "git+https://github.com/open-chat-labs/open-chat.git#13ba018a839e62edb59af889478c02bcd8853917"
 dependencies = [
  "candid",
  "canister_client",
@@ -1487,7 +1533,7 @@ dependencies = [
 [[package]]
 name = "icrc_ledger_canister"
 version = "0.1.0"
-source = "git+https://github.com/open-chat-labs/open-chat.git#2d50aed0918414f504a0a6ab4f9bb7084751aac5"
+source = "git+https://github.com/open-chat-labs/open-chat.git#13ba018a839e62edb59af889478c02bcd8853917"
 dependencies = [
  "candid",
  "candid_gen",
@@ -1500,7 +1546,7 @@ dependencies = [
 [[package]]
 name = "icrc_ledger_canister_c2c_client"
 version = "0.1.0"
-source = "git+https://github.com/open-chat-labs/open-chat.git#2d50aed0918414f504a0a6ab4f9bb7084751aac5"
+source = "git+https://github.com/open-chat-labs/open-chat.git#13ba018a839e62edb59af889478c02bcd8853917"
 dependencies = [
  "candid",
  "canister_client",
@@ -1725,6 +1771,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "keccak"
+version = "0.1.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ecc2af9a1119c51f12a14607e783cb977bde58bc069ff0c3da1095e635d70654"
+dependencies = [
+ "cpufeatures",
+]
+
+[[package]]
 name = "lazy_static"
 version = "1.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1739,7 +1794,7 @@ checksum = "884e2677b40cc8c339eaefcb701c32ef1fd2493d71118dc0ca4b6a736c93bd67"
 [[package]]
 name = "ledger_utils"
 version = "0.1.0"
-source = "git+https://github.com/open-chat-labs/open-chat.git#2d50aed0918414f504a0a6ab4f9bb7084751aac5"
+source = "git+https://github.com/open-chat-labs/open-chat.git#13ba018a839e62edb59af889478c02bcd8853917"
 dependencies = [
  "candid",
  "ic-cdk 0.18.0",
@@ -1775,6 +1830,28 @@ name = "litemap"
 version = "0.7.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "23fb14cb19457329c82206317a5663005a4d404783dc74f4252769b0d5f42856"
+
+[[package]]
+name = "local_user_index_canister"
+version = "0.1.0"
+source = "git+https://github.com/open-chat-labs/open-chat.git#13ba018a839e62edb59af889478c02bcd8853917"
+dependencies = [
+ "candid",
+ "candid_gen",
+ "community_canister",
+ "constants",
+ "event_store_canister",
+ "group_canister",
+ "ic-ledger-types 0.15.0",
+ "oc_error_codes",
+ "serde",
+ "serde_bytes",
+ "ts-rs",
+ "ts_export",
+ "types",
+ "user_canister",
+ "utils",
+]
 
 [[package]]
 name = "log"
@@ -1872,7 +1949,7 @@ dependencies = [
 [[package]]
 name = "msgpack"
 version = "0.1.0"
-source = "git+https://github.com/open-chat-labs/open-chat.git#2d50aed0918414f504a0a6ab4f9bb7084751aac5"
+source = "git+https://github.com/open-chat-labs/open-chat.git#13ba018a839e62edb59af889478c02bcd8853917"
 dependencies = [
  "rmp-serde",
  "serde",
@@ -1977,7 +2054,7 @@ dependencies = [
 [[package]]
 name = "oc_error_codes"
 version = "0.1.0"
-source = "git+https://github.com/open-chat-labs/open-chat.git#2d50aed0918414f504a0a6ab4f9bb7084751aac5"
+source = "git+https://github.com/open-chat-labs/open-chat.git#13ba018a839e62edb59af889478c02bcd8853917"
 dependencies = [
  "candid",
  "enum-repr",
@@ -2129,7 +2206,7 @@ dependencies = [
 [[package]]
 name = "proposals_bot_canister"
 version = "0.1.0"
-source = "git+https://github.com/open-chat-labs/open-chat.git#2d50aed0918414f504a0a6ab4f9bb7084751aac5"
+source = "git+https://github.com/open-chat-labs/open-chat.git#13ba018a839e62edb59af889478c02bcd8853917"
 dependencies = [
  "candid",
  "candid_gen",
@@ -2327,7 +2404,7 @@ checksum = "28d3b2b1366ec20994f1fd18c3c594f05c5dd4bc44d8bb0c1c632c8d6829481f"
 [[package]]
 name = "search"
 version = "0.1.0"
-source = "git+https://github.com/open-chat-labs/open-chat.git#2d50aed0918414f504a0a6ab4f9bb7084751aac5"
+source = "git+https://github.com/open-chat-labs/open-chat.git#13ba018a839e62edb59af889478c02bcd8853917"
 dependencies = [
  "serde",
 ]
@@ -2423,9 +2500,19 @@ dependencies = [
 [[package]]
 name = "sha256"
 version = "0.1.0"
-source = "git+https://github.com/open-chat-labs/open-chat.git#2d50aed0918414f504a0a6ab4f9bb7084751aac5"
+source = "git+https://github.com/open-chat-labs/open-chat.git#13ba018a839e62edb59af889478c02bcd8853917"
 dependencies = [
  "sha2",
+]
+
+[[package]]
+name = "sha3"
+version = "0.10.8"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "75872d278a8f37ef87fa0ddbda7802605cb18344497949862c0d4dcb291eba60"
+dependencies = [
+ "digest",
+ "keccak",
 ]
 
 [[package]]
@@ -2522,7 +2609,7 @@ checksum = "a8f112729512f8e442d81f95a8a7ddf2b7c6b8a1a6f509a95864142b30cab2d3"
 [[package]]
 name = "stable_memory_map"
 version = "0.1.0"
-source = "git+https://github.com/open-chat-labs/open-chat.git#2d50aed0918414f504a0a6ab4f9bb7084751aac5"
+source = "git+https://github.com/open-chat-labs/open-chat.git#13ba018a839e62edb59af889478c02bcd8853917"
 dependencies = [
  "ic-cdk 0.18.0",
  "ic-stable-structures",
@@ -2955,7 +3042,7 @@ dependencies = [
 [[package]]
 name = "ts_export"
 version = "0.1.0"
-source = "git+https://github.com/open-chat-labs/open-chat.git#2d50aed0918414f504a0a6ab4f9bb7084751aac5"
+source = "git+https://github.com/open-chat-labs/open-chat.git#13ba018a839e62edb59af889478c02bcd8853917"
 dependencies = [
  "serde",
  "ts-rs",
@@ -2965,7 +3052,7 @@ dependencies = [
 [[package]]
 name = "ts_export_macros"
 version = "0.1.0"
-source = "git+https://github.com/open-chat-labs/open-chat.git#2d50aed0918414f504a0a6ab4f9bb7084751aac5"
+source = "git+https://github.com/open-chat-labs/open-chat.git#13ba018a839e62edb59af889478c02bcd8853917"
 dependencies = [
  "quote",
  "syn 2.0.100",
@@ -2984,6 +3071,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d2df906b07856748fa3f6e0ad0cbaa047052d4a7dd609e231c4f72cee8c36f31"
 
 [[package]]
+name = "twox-hash"
+version = "2.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e7b17f197b3050ba473acf9181f7b1d3b66d1cf7356c6cc57886662276e65908"
+dependencies = [
+ "rand",
+]
+
+[[package]]
 name = "typed-arena"
 version = "2.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2998,7 +3094,7 @@ checksum = "1dccffe3ce07af9386bfd29e80c0ab1a8205a2fc34e4bcd40364df902cfa8f3f"
 [[package]]
 name = "types"
 version = "0.1.0"
-source = "git+https://github.com/open-chat-labs/open-chat.git#2d50aed0918414f504a0a6ab4f9bb7084751aac5"
+source = "git+https://github.com/open-chat-labs/open-chat.git#13ba018a839e62edb59af889478c02bcd8853917"
 dependencies = [
  "candid",
  "getrandom 0.2.15",
@@ -3048,7 +3144,7 @@ checksum = "daf8dba3b7eb870caf1ddeed7bc9d2a049f3cfdfae7cb521b087cc33ae4c49da"
 [[package]]
 name = "user_canister"
 version = "0.1.0"
-source = "git+https://github.com/open-chat-labs/open-chat.git#2d50aed0918414f504a0a6ab4f9bb7084751aac5"
+source = "git+https://github.com/open-chat-labs/open-chat.git#13ba018a839e62edb59af889478c02bcd8853917"
 dependencies = [
  "candid",
  "chat_events",
@@ -3086,6 +3182,37 @@ name = "utf8parse"
 version = "0.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "06abde3611657adf66d383f00b093d7faecc7fa57071cce2578660c9f1010821"
+
+[[package]]
+name = "utils"
+version = "0.1.0"
+source = "git+https://github.com/open-chat-labs/open-chat.git#13ba018a839e62edb59af889478c02bcd8853917"
+dependencies = [
+ "base64 0.22.1",
+ "candid",
+ "canister_client",
+ "canister_time",
+ "constants",
+ "cycles_dispenser_client",
+ "dataurl",
+ "futures",
+ "getrandom 0.2.15",
+ "ic-cdk 0.18.0",
+ "ic-cdk-timers 0.12.0",
+ "ic-management-canister-types",
+ "itertools 0.13.0",
+ "msgpack",
+ "oc_error_codes",
+ "rand",
+ "serde",
+ "serde_json",
+ "sha256",
+ "sha3",
+ "time",
+ "tracing",
+ "twox-hash",
+ "types",
+]
 
 [[package]]
 name = "uuid"

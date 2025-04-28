@@ -38,8 +38,7 @@ dataurl = {workspace = true}
 oc_bots_sdk = {workspace = true}
 oc_bots_sdk_canister = {workspace = true}
 user_canister = {workspace = true}
-group_canister = {workspace = true}
-community_canister = {workspace = true}
+local_user_index_canister = {workspace = true}
 icrc7-types = {workspace = true}
 clap = {workspace = true}
 shell-words = {workspace = true}

@@ -24,9 +24,9 @@ NFT_COL_CANISTER_ID=$(dfx canister id nft)
 
 NFT_MAX_SUPPLY=10000
 NFT_COL_URL_TEMPLATE="http://$BOT_CANISTER_ID.raw.localhost:8080/assets/nfts/{}.jpg"
-NFT_MIN_CHAT_MEMBERS=0 # chat where the meme was posted must have at least n members to a NFT be minted
-NFT_MIN_USER_CREATION_INTERVAL=$((0*15*24*60*60*1000)) # a reaction only counts if the user reacting was created at least n days ago
-NFT_MIN_NUM_REACTIONS=0
+NFT_MIN_CHAT_MEMBERS=3 # chat where the meme was posted must have at least n members to a NFT be minted
+NFT_MIN_USER_CREATION_INTERVAL=$((1*24*60*60*1000)) # a reaction only counts if the user reacting was created at least n days ago
+NFT_MIN_NUM_REACTIONS=1
 NFT_MAX_NUM_REACTIONS=10
 NFT_MIN_MINTING_COST=100000000 # 1.0 ICP in e8s
 NFT_MAX_MINTING_COST=10000000000 # 100.0 ICP in e8s
