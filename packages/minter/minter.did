@@ -13,10 +13,10 @@ type BTreeMap = vec record {
 type Coin = record { ty : CoinType; canister_id : principal };
 type CoinType = variant { Icrc1 };
 type Config = record {
-  max_owners_raffle : nat32;
   team_fee : nat64;
   treasury_fee : nat64;
   meme_coin : Coin;
+  block_reward_tiers : vec nat64;
   meme_nft : NftCollection;
   administrator : principal;
 };

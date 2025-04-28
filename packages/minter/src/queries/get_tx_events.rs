@@ -48,18 +48,7 @@ async fn get_tx_events(
                         ("reason".to_string(), match reason {
                             MintReason::TeamFee => Value::Text("team fee".to_string()),
                             MintReason::TreasuryFee => Value::Text("treasury fee".to_string()),
-                            MintReason::NftMinter(items) => Value::Text(
-                                format!(
-                                    "nft minter: {}{}", 
-                                    items.iter()
-                                        .take(10)
-                                        .map(|i| i.to_string())
-                                        .collect::<Vec<_>>()
-                                        .join(",")
-                                    ,
-                                    if items.len() > 10 {"..."} else {""}
-                                )
-                            ),
+                            MintReason::TopNftMinter => Value::Text("top nft minter".to_string()),
                             MintReason::RaffleWinner => Value::Text("raffle winner".to_string()),
                         })
                     }

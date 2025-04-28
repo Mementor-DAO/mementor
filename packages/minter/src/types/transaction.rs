@@ -14,7 +14,7 @@ pub const TX_V1_00: u32 = 1_00;
 pub enum MintReason {
     TeamFee,
     TreasuryFee,
-    NftMinter(Vec<u128>),
+    TopNftMinter,
     RaffleWinner,
 }
 
@@ -25,7 +25,7 @@ impl MintReason {
         Cow::Owned(vec![match self {
             MintReason::TeamFee => 0,
             MintReason::TreasuryFee => 1,
-            MintReason::NftMinter(_) => 2,
+            MintReason::TopNftMinter => 2,
             MintReason::RaffleWinner => 3,
         }])
     }
