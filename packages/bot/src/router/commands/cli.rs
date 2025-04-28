@@ -206,7 +206,11 @@ impl CommandHandler<CanisterRuntime> for MemeCli {
                 Ok(EphemeralMessageBuilder::new(
                     MessageContentInitial::from_text(text),
                     client.context().message_id().unwrap(),
-                ).with_block_level_markdown(true).build().into())
+                )
+                    .with_block_level_markdown(true)
+                    .build()
+                    .into()
+                )
             }
         }
     }
@@ -617,18 +621,34 @@ impl MemeCli {
                     );
                 }
 
-                // check user ICP balance
-                let cost = nft_service.calc_minting_cost();
-                let balance = WalletService::balance_of(user_id).await?;
-                if balance < cost {
-                    let acc_id = WalletService::address_of(user_id);
+                // check if user has proof of uniqueness
+                let has_poh = match get_chat_user_profile(chat, &user_id).await {
+                    Some(profile) => {
+                        !profile.user_type.is_bot() &&
+                            profile.unique_person_proof.is_some()
+                    },
+                    None => {
+                        false
+                    }
+                };
+
+                if !has_poh {
+                    return Err(format!("You haven't proven to be a unique individual yet. Please do that first on Open Chat"));
+                }
+
+                // check if group/channel has enough members
+                let min_chat_members = nft_service.min_chat_members();
+                let num_chat_members = if min_chat_members > 0 { 
+                    Self::get_num_chat_members(client).await.unwrap_or(u32::MAX)
+                }
+                else {
+                    u32::MAX
+                };
+
+                if num_chat_members < min_chat_members {
                     return Err(
-                        format!(
-                            "Your Mementor wallet balance of **{:.8}** ICP is too low to cover the current minting cost of **{:.8}** ICP  \nPlease transfer enough ICP to this address: **{}**", 
-                            (balance as f32) / 100000000.0,
-                            (cost as f32) / 100000000.0,
-                            acc_id
-                        )
+                        format!("The group/channel where the meme was posted has only {} members. Expected at least {}", 
+                            num_chat_members, min_chat_members)
                     );
                 }
 
@@ -650,19 +670,18 @@ impl MemeCli {
                     );
                 }
 
-                // check if group/channel has enough members
-                let min_chat_members = nft_service.min_chat_members();
-                let num_chat_members = if min_chat_members > 0 { 
-                    Self::get_num_chat_members(client).await.unwrap_or(u32::MAX)
-                }
-                else {
-                    u32::MAX
-                };
-
-                if num_chat_members < min_chat_members {
+                // check user ICP balance
+                let cost = nft_service.calc_minting_cost();
+                let balance = WalletService::balance_of(user_id).await?;
+                if balance < cost {
+                    let acc_id = WalletService::address_of(user_id);
                     return Err(
-                        format!("The group/channel where the meme was posted has only {} members. Expected at least {}", 
-                            num_chat_members, min_chat_members)
+                        format!(
+                            "Your Mementor wallet balance of **{:.8}** ICP is too low to cover the current minting cost of **{:.8}** ICP  \nPlease transfer enough ICP to this address: **{}**", 
+                            (balance as f32) / 100000000.0,
+                            (cost as f32) / 100000000.0,
+                            acc_id
+                        )
                     );
                 }
 
