@@ -18,9 +18,9 @@ ADMIN_PRINCIPAL=$(dfx identity get-principal)
 COIN_CANISTER_ID=$(dfx canister id coin)
 NFT_COL_CANISTER_ID=$(dfx canister id nft)
 
-TEAM_FEE=10000000 # 10% in e8s
-TREASURY_FEE=20000000 # 20% in e8s
-MAX_OWNERS_PER_RAFFLE=5 # how many NFT owners will be randomly selected to participate in the raffle if no NFTs were minted during a block interval
+TEAM_FEE=10000000 # 10% of the block reward in e8s
+TREASURY_FEE=20000000 # 20% of the block reward in e8s
+BLOCK_REWARD_TIERS="vec {50000000; 30000000; 20000000}" # 50%, 30%, 20% in e8s (after fees)
 
 dfx deploy minter -v --identity default --with-cycles 10000000000000 --argument "(
     record {
@@ -28,7 +28,7 @@ dfx deploy minter -v --identity default --with-cycles 10000000000000 --argument 
         administrator = principal \"$ADMIN_PRINCIPAL\";
         team_fee = $TEAM_FEE;
         treasury_fee = $TREASURY_FEE;
-        max_owners_per_raffle = $MAX_OWNERS_PER_RAFFLE;
+        block_reward_tiers = $BLOCK_REWARD_TIERS;
         meme_nft = record { 
           ty = variant {Icrc7};
           canister_id = principal \"$NFT_COL_CANISTER_ID\";

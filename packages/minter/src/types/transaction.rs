@@ -15,7 +15,6 @@ pub enum MintReason {
     TeamFee,
     TreasuryFee,
     TopNftMinter,
-    RaffleWinner,
 }
 
 impl MintReason {
@@ -26,7 +25,6 @@ impl MintReason {
             MintReason::TeamFee => 0,
             MintReason::TreasuryFee => 1,
             MintReason::TopNftMinter => 2,
-            MintReason::RaffleWinner => 3,
         }])
     }
 }

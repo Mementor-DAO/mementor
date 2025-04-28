@@ -1,11 +1,11 @@
-use std::{collections::{BTreeMap, HashSet}, time::Duration, u64};
+use std::time::Duration;
 use candid::{Nat, Principal};
 use icrc7_types::icrc3_types::{
     GetBlocksArgs, GetBlocksResult, TransactionRange
 };
-use icrc_ledger_types::{icrc::generic_value::Value, icrc1::{
+use icrc_ledger_types::icrc1::{
     account::Account, transfer::{TransferArg, TransferError}
-}};
+};
 use futures::{future, FutureExt};
 use crate::{
     state, 
@@ -25,8 +25,10 @@ use crate::{
     }, 
     utils::{
         hasher::DblHasher, 
-        icrc1::str_to_subaccount, 
-        nat::nat_to_u128, 
+        icrc1::{
+            get_meta_reactions, get_tx_id, get_tx_meta, 
+            get_tx_to, str_to_subaccount
+        }, 
         rng
     }
 };
@@ -34,8 +36,6 @@ use crate::{
 const TREASURY_SUBACCOUNT: &str = "TREASURY_SUBACCOUNT";
 
 const MAX_LOG_ITEMS_PER_CALL: usize = 1024;
-const MAX_IDS_PER_CALL: usize = 128;
-const MAX_QUERY_CALLS: usize = 16;
 const MAX_UPDATE_CALLS: usize = 4;
 
 pub struct ChainService;
@@ -67,62 +67,46 @@ impl ChainService {
         let rewards_tiers = state::read(|s| s.config().block_reward_tiers.clone());
 
         // 1st: collect all MEME NFTs minted since last block
-        let owners = Self::get_minted_nfts(
+        let mut tokens = Self::get_minted_nfts(
             meme_nft.canister_id, 
             block_ts, 
             &mut chain
         ).await;
 
-        // if no NFT was minted in the interval, divide the block 
-        // rewards to a number of randomly selected NFT owners
-        let (mut owners, is_minted) = if owners.len() == 0 {
-            let tokens = Self::randomly_select_nfts(
-                meme_nft.canister_id
-            ).await;
+        let block_reward = Self::calc_reward(chain.height);
+        
+        // any NFT minted since last block? 
+        let transactions = if tokens.len() > 0 {
+            // 2nd: sort by reactions (desc), token_id (asc)
+            tokens.sort_by(|a, b| a.1.cmp(&b.1));
+            tokens.sort_by(|a, b| b.2.cmp(&a.2));
 
-            let owners = Self::get_nft_owners(
-                meme_nft.canister_id, 
-                &tokens
-            ).await;
+            // 3rd: select the ones at the top reward tiers
+            let accounts = tokens.iter()
+                .take(rewards_tiers.len())
+                .map(|m| m.0.clone())
+                .collect();
 
-            ic_cdk::println!("info: block rewards will be divided between {} lucky NFT owners", owners.len());
-            
-            (
-                owners,
-                false
+            // 4th: create transactions
+            let block_reward = chain.accumulated_reward + block_reward;
+            chain.accumulated_reward = 0;
+
+            Self::build_transactions(
+                &accounts, 
+                block_reward, 
+                rewards_tiers,
+                team_fee_p,
+                treasury_fee_p,
+                admin,
+                block_ts
             )
         }
+        // no NFT minted, accumulate the reward for the next block..
         else {
-            ic_cdk::println!("info: block rewards will be divided between {} NFT minters", owners.len());
+            chain.accumulated_reward += block_reward;
 
-            (
-                owners,
-                true
-            )
+            vec![]
         };
-
-        // 2nd: sort by reactions (desc), token_id (asc)
-        owners.sort_by(|a, b| a.1.cmp(&b.1));
-        owners.sort_by(|a, b| b.2.cmp(&a.2));
-
-        // 3rd: select the ones at the top reward tiers
-        let owners = owners.iter()
-            .take(rewards_tiers.len())
-            .map(|m| m.0.clone())
-            .collect();
-
-        // 4th: create transactions
-        let block_reward = Self::calc_reward(chain.height);
-        let transactions = Self::build_transactions(
-            &owners, 
-            block_reward, 
-            rewards_tiers,
-            team_fee_p,
-            treasury_fee_p,
-            admin,
-            is_minted,
-            block_ts
-        );
 
         let mut hasher = DblHasher::new();
 
@@ -217,12 +201,12 @@ impl ChainService {
                                             "7mint" => {
                                                 if let Some(tx) = block.get("tx") {
                                                     if let Ok(tx) = tx.clone().as_map() {
-                                                        if let Some(token_id) = Self::get_tx_id(&tx) {
+                                                        if let Some(token_id) = get_tx_id(&tx) {
                                                             ic_cdk::println!("info: 7mint block found: {}", token_id);
 
-                                                            if let Some(account) = Self::get_tx_to(&tx) {
-                                                                let num_reactions = if let Some(meta) = Self::get_tx_meta(&tx) {
-                                                                    if let Some(reactions) = Self::get_meta_reactions(&meta) {
+                                                            if let Some(account) = get_tx_to(&tx) {
+                                                                let num_reactions = if let Some(meta) = get_tx_meta(&tx) {
+                                                                    if let Some(reactions) = get_meta_reactions(&meta) {
                                                                         reactions
                                                                     }
                                                                     else {
@@ -265,88 +249,6 @@ impl ChainService {
         }
 
         minters
-    }
-
-    async fn get_nft_owners(
-        nft_canister_id: Principal,
-        tokens: &Vec<u128>
-    ) -> Vec<(Account, u128, u32)> {
-
-        let mut owner_of_calls = vec![];
-        let mut metadata_calls = vec![];
-        let mut args = vec![];
-
-        for ids_chunk in tokens.chunks(MAX_IDS_PER_CALL) {
-            owner_of_calls.push(
-                ic_cdk::call::<(Vec<u128>, ), (Vec<Option<Account>>, )>(
-                    nft_canister_id, 
-                    "icrc7_owner_of", 
-                    (ids_chunk.to_vec(), )
-                ).boxed()
-            );
-
-            metadata_calls.push(
-                ic_cdk::call::<(Vec<u128>, ), (Vec<Option<Value>>, )>(
-                    nft_canister_id, 
-                    "icrc7_token_metadata", 
-                    (ids_chunk.to_vec(), )
-                ).boxed()
-            );
-
-            args.push((ids_chunk, ));
-        }
-
-        let mut owners : Vec<(Account, u128, u32)> = Vec::new();
-
-        for (c, chunk) in owner_of_calls.chunks_mut(MAX_QUERY_CALLS).enumerate() {
-            let metadata_res = future::join_all(
-                metadata_calls.drain(0..chunk.len())
-            ).await;
-            let owner_of_res = future::join_all(
-                chunk
-            ).await;
-        
-            for (i, res) in owner_of_res.iter().zip(metadata_res).enumerate() {
-                match res {
-                    (Ok(owner_res), Ok(metadata_res)) => {
-                        let args = args[c * MAX_QUERY_CALLS + i];
-                        for (j, account) in owner_res.0.iter().enumerate() {
-                            let token_id = args.0[j];
-                            let num_reactions = if let Some(metadata) = &metadata_res.0[j] {
-                                if let Ok(metadata) = metadata.clone().as_map() {
-                                    Self::get_meta_reactions(&metadata).unwrap_or(0)
-                                }
-                                else {
-                                    0
-                                }
-                            }
-                            else {
-                                0
-                            };
-
-                            if let Some(account) = account {
-                                owners.push((
-                                    account.clone(), 
-                                    token_id,
-                                    num_reactions
-                                ));
-                            }
-                        }
-                    }
-                    (Err(err0), Err(err1)) => {
-                        ic_cdk::println!("error: calling icrc7_owner_of and icrc7_token_metadata: {} and {}", err0.1, err1.1);
-                    }
-                    (Err(err), _) => {
-                        ic_cdk::println!("error: calling icrc7_owner_of: {}", err.1);
-                    }
-                    (_, Err(err)) => {
-                        ic_cdk::println!("error: calling icrc7_token_metadata: {}", err.1);
-                    }
-                }
-            }
-        }
-
-        owners
     }
 
     async fn distribute_rewards(
@@ -406,7 +308,6 @@ impl ChainService {
         team_fee_p: u64,
         treasury_fee_p: u64,
         admin: Principal,
-        is_minter: bool,
         block_ts: u64
     ) -> Vec<Transaction> {
         let timestamp = (block_ts / 1_000_000_000) as u32;
@@ -451,12 +352,7 @@ impl ChainService {
                     op: TransactionOp::Mint { 
                         to: owner.clone(), 
                         amount,
-                        reason: if is_minter {
-                            MintReason::TopNftMinter
-                        }
-                        else {
-                            MintReason::RaffleWinner
-                        },
+                        reason: MintReason::TopNftMinter,
                     },
                     timestamp,
                 });
@@ -464,123 +360,6 @@ impl ChainService {
         }
 
         txs
-    }
-    
-    async fn randomly_select_nfts(
-        canister_id: Principal
-    ) -> Vec<u128> {
-        let total_supply = match ic_cdk::call::<((), ), (u128, )>(
-            canister_id, 
-            "icrc7_total_supply", 
-            ((), )
-        ).await {
-            Ok(total) => {
-                total.0 as usize
-            },
-            Err(err) => {
-                ic_cdk::println!("error: calling icrc7_total_supply: {}", err.1);
-                0
-            },
-        };
-
-        let tiers = state::read(|s| s.config().block_reward_tiers.clone());
-        let total = tiers.len().min(total_supply);
-        let mut token_ids = HashSet::new();
-        while token_ids.len() < total {
-            let token_id = rng::gen_range(0..total_supply) as u128;
-            token_ids.insert(token_id);
-        }
-
-        token_ids.iter()
-            .cloned()
-            .collect()
-    }
-
-    fn get_tx_id(
-        tx: &BTreeMap<String, Value>
-    ) -> Option<u128> {
-        if let Some(tid) = tx.get("tid") {
-            if let Ok(tid) = tid.clone().as_nat() {
-                Some(nat_to_u128(tid))
-            }
-            else {
-                None
-            }
-        }
-        else {
-            None
-        }
-    }
-
-    #[allow(unused)]
-    fn get_tx_ts(
-        tx: &BTreeMap<String, Value>
-    ) -> Option<u64> {
-        if let Some(ts) = tx.get("ts") {
-            if let Ok(ts) = ts.clone().as_nat() {
-                Some(nat_to_u128(ts) as u64)
-            }
-            else {
-                None
-            }
-        }
-        else {
-            None
-        }
-    }
-
-    fn get_tx_meta(
-        tx: &BTreeMap<String, Value>
-    ) -> Option<BTreeMap<String, Value>> {
-        if let Some(meta) = tx.get("meta") {
-            if let Ok(meta) = meta.clone().as_map() {
-                Some(meta)
-            }
-            else {
-                None
-            }
-        }
-        else {
-            None
-        }
-    }
-
-    fn get_meta_reactions(
-        meta: &BTreeMap<String, Value>
-    ) -> Option<u32> {
-        if let Some(reactions) = meta.get("Reactions") {
-            if let Ok(num) = reactions.clone().as_nat() {
-                Some(nat_to_u128(num) as u32)
-            }
-            else {
-                None
-            }
-        }
-        else {
-            None
-        }
-    }
-
-    fn get_tx_to(
-        tx: &BTreeMap<String, Value>
-    ) -> Option<Account> {
-        if let Some(to) = tx.get("to") {
-            if let Ok(to) = to.clone().as_array() {
-                if let Ok(owner) = to[0].clone().as_blob() {
-                    if let Ok(subaccount) = to[1].clone().as_blob() {
-                        let owner = Principal::from_slice(owner.as_slice());
-                        let subaccount = subaccount.first_chunk::<32>()
-                            .unwrap().clone();
-                        return Some(Account {
-                            owner, 
-                            subaccount: Some(subaccount)
-                        });
-                    }
-                }
-            }
-        }
-
-        None
     }
 }
 

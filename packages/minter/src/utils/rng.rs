@@ -31,6 +31,7 @@ where
     RNG.with_borrow_mut(|s| s.as_mut().expect(RNG_NOT_INITIALIZED).gen::<T>())
 }
 
+#[allow(unused)]
 pub fn gen_range<T, R>(r: R) -> T
 where
     T: SampleUniform,

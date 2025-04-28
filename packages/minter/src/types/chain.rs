@@ -11,6 +11,7 @@ pub const BLOCKS_PER_HALVING: u64 = (60 * 60 * 24 * 288) / BLOCK_TIME; // halvin
 pub struct Chain {
     pub height: u32,
     pub last_block_id: BlockId,
+    pub accumulated_reward: u64,
     pub next_nft_block_log_id: u128,
 }
 
@@ -21,6 +22,7 @@ impl Chain {
         Self {
             height: 0,
             last_block_id: BlockHash::new(U256::ZERO),
+            accumulated_reward: 0,
             next_nft_block_log_id: 0,
         }
     }
