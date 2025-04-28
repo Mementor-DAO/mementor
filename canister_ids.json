@@ -1,0 +1,14 @@
+{
+  "bot": {
+    "ic": "agb37-diaaa-aaaac-qadyq-cai"
+  },
+  "coin": {
+    "ic": "aidwx-yyaaa-aaaac-qadzq-cai"
+  },
+  "minter": {
+    "ic": "apcqd-vaaaa-aaaac-qadza-cai"
+  },
+  "nft": {
+    "ic": "aba5l-oqaaa-aaaac-qadya-cai"
+  }
+}

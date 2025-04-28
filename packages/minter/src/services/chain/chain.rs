@@ -129,6 +129,8 @@ impl ChainService {
         };
 
         let block_id = block.calc_id(&mut hasher);
+        ic_cdk::println!("Block {} added at height {} with {} txs", hex::encode(&block_id.inner), chain.height, block.txs.len());
+
         BlockStorage::save(block_id.clone(), block);
 
         for (id, tx) in tx_ids.iter().zip(&transactions) {
