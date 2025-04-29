@@ -1,13 +1,7 @@
 use std::{env, fs, path::{Path, PathBuf}, sync::RwLock};
 use bot_api::insert_image::{ImageInsertRequest, ImageInsertResponse};
-use candid::CandidType;
 use ic_agent::{export::Principal, identity::BasicIdentity, Agent};
 use ic_utils::Canister;
-use serde::{Deserialize, Serialize};
-
-#[derive(CandidType, Serialize, Deserialize)]
-struct Empty{
-}
 
 static AGENT: RwLock<Option<Agent>> = RwLock::new(None);
 
@@ -52,26 +46,40 @@ async fn upload_files(
         .build()
         .map_err(|err| err.to_string())?;
 
-    for fname in files {
-        let id = u32::from_str_radix(
-            &fname.file_name().unwrap().to_string_lossy().replace(".jpg", ""),
-            10
-        ).unwrap();
+    for fnames in files.chunks(8) {
+        let mut futs = vec![];
+        for fname in fnames {
+            let s_id = fname.file_name().unwrap().to_string_lossy()
+                .replace(".jpg", "");
+            let id = u32::from_str_radix(&s_id, 10).unwrap();
 
-        println!("Uploading id({}) {}", id, fname.to_string_lossy());
+            println!("Uploading id({}) {}", id, fname.to_string_lossy());
 
-        let jpg = fs::read(fname).unwrap();
+            let jpg = fs::read(fname).unwrap();
 
-        let (_, ): (ImageInsertResponse, ) = canister.update("insert_image")
-            .with_arg(ImageInsertRequest { 
-                id, 
-                mime_type: "image/jpeg".to_string(), 
-                data: jpg
-            })
-            .build()
-            .await
-            .map_err(|err| err.to_string())?;
+            futs.push(upload_file(&canister, id, jpg));
+        }
+        
+        futures::future::join_all(futs).await;
     }
+
+    Ok(())
+}
+
+async fn upload_file(
+    canister: &Canister<'_>, 
+    id: u32, 
+    data: Vec<u8>
+) -> Result<(), String> {
+    let (_, ): (ImageInsertResponse, ) = canister.update("insert_image")
+        .with_arg(ImageInsertRequest { 
+            id, 
+            mime_type: "image/jpeg".to_string(), 
+            data
+        })
+        .build()
+        .await
+        .map_err(|err| err.to_string())?;
 
     Ok(())
 }
