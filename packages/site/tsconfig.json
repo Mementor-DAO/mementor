@@ -1,0 +1,47 @@
+{
+  "compilerOptions": {
+    "composite": true,
+    "strict": true,
+    "alwaysStrict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictPropertyInitialization": true,
+    "strictBindCallApply": true,
+    "noImplicitThis": true,
+    "noImplicitReturns": true,
+    "skipLibCheck": true,
+    "module": "ESNext",
+    "target": "ES2022",
+    "moduleResolution": "bundler",
+    "jsx": "react",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "allowSyntheticDefaultImports": true,
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "baseUrl": ".",
+    "paths": {
+      "@declarations/*": ["src/declarations/*"],
+      "@assets/*": ["src/assets/*"],
+      "@components/*": ["src/components/*"],
+      "@hooks/*": ["src/hooks/*"],
+      "@interfaces/*": ["src/interfaces/*"],
+      "@libs/*": ["src/libs/*"],
+      "@providers/*": ["src/providers/*"],
+      "@stores/*": ["src/stores/*"],
+      "@views/*": ["src/views/*"]
+    }
+  },
+  "include": [
+    "vite.config.ts",
+    "src"
+, "global.d.ts"  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "deps",
+    "src/declarations",
+  ]
+}

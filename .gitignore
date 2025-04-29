@@ -28,3 +28,4 @@ dist/
 **/assets/data/*
 
 *.pem
+packages/site/tsconfig.tsbuildinfo
