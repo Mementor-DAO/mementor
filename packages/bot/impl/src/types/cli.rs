@@ -5,7 +5,7 @@ use super::nft::NftId;
 #[command(
     name = "",
     version, 
-    about = "Create hilarious memes, mint them as exclusive MEME NFTs, and earn MEME coins in return! See https://mementor.fun", 
+    about = "Create memes, mint them as exclusive MEME NFTs, and earn MEME coins in return!  \nLearn more at https://mementor.fun", 
     long_about = None
 )]
 pub struct Cli {
@@ -38,9 +38,9 @@ pub enum Commands {
         #[arg(help = "The story topic, e.g.: crypto, cats, cars, etc (default crypto)")]
         topic: Option<String>,
     },
-    #[command(about = "Post a meme previously created with '/'meme gen'")]
+    #[command(about = "Post a meme previously created with '/meme gen or suggest'")]
     Post {
-        #[arg(help = "Optional alphanumeric id of the meme returned by '/meme gen' (default: last meme generated)")]
+        #[arg(help = "Optional alphanumeric id of the meme returned by '/meme gen or suggest' (default: last meme generated)")]
         id: Option<String>
     },
     #[command(subcommand, about = "Sub-commands of the **Mementor Wallet**")]
@@ -73,7 +73,7 @@ pub enum Wallet {
 pub enum Nft {
     #[command(about = "Mint a MEME NFT, previously posted with '/meme post'")]
     Mint {
-        #[arg(help = "Optional alphanumeric id of the meme returned by '/meme gen' (default: last meme posted)")]
+        #[arg(help = "Optional alphanumeric id of the meme returned by '/meme gen or suggest' (default: last meme posted)")]
         id: Option<String>,
     },
     #[command(about = "Print the MEME NFT balance of a principal")]

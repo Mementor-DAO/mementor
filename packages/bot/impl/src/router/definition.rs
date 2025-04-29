@@ -8,7 +8,7 @@ pub async fn get(
     HttpResponse::json(
         200,
         &BotDefinition {
-            description: "Create hilarious memes, mint them as exclusive MEME NFTs, and earn MEME coins in return! See https://mementor.fun"
+            description: "Create memes, mint them as exclusive MEME NFTs, and earn MEME coins in return! Learn more at https://mementor.fun"
                 .to_string(),
             commands: commands::definitions(),
             autonomous_config: None,
