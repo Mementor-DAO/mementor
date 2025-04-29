@@ -37,7 +37,7 @@ MEMES_GZ=$(od -t x1 -v -w1048576 -A n $ASSETS_DATA_DIR/memes.gz | sed "s/ /\\\/g
 
 dfx deploy bot -v --identity default --with-cycles 10000000000000 --argument-file <(echo "(
     record {
-      oc_public_key = \"$OC_PUBLIC_KEY\";
+      oc_public_key = \"$OC_PUBLIC_KEY_DEV\";
       administrator = principal \"$ADMIN_PRINCIPAL\";
       memes_json_gz = blob \"$MEMES_GZ\";
       index_tar_gz = blob \"$INDEX_GZ\"; 
