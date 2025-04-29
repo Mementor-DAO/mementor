@@ -44,7 +44,7 @@ async fn upload_files(
         .build()
         .map_err(|err| err.to_string())?;
 
-    for fnames in files.chunks(8) {
+    for fnames in files.chunks(16) {
         let mut futs = vec![];
         for fname in fnames {
             let s_id = fname.file_name().unwrap().to_string_lossy()
