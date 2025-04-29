@@ -19,8 +19,6 @@ async fn main(
 
     upload_files(bot_canister_id, files)
         .await.unwrap();
-    
-    println!("hey")
 }
 
 async fn setup(
