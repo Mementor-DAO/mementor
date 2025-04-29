@@ -1,15 +1,18 @@
 use image::RgbaImage;
 use oc_bots_sdk_canister::env;
+use bot_api::insert_image::{
+    ImageInsertRequest, ImageInsertResponse
+};
 use crate::{
-    api::insert_image::{
-        ImageInsertRequest, ImageInsertResponse
-    }, services::meme, state::{self}, storage::{
+    services::meme, state::{self}, storage::{
         image::ImageStorage, 
         thumb::ThumbStorage
-    }, types::{
+    }, 
+    types::{
         image::IMAGE_MAX_SIZE, 
         thumb::THUMB_MAX_SIZE
-    }, utils::out_font::OutlinedFont
+    }, 
+    utils::out_font::OutlinedFont
 };
 
 #[ic_cdk::update]

@@ -1,10 +1,9 @@
 use candid::CandidType;
 use serde::{Deserialize, Serialize};
-use crate::services::meme::MemeTplId;
 
 #[derive(CandidType, Serialize, Deserialize)]
 pub struct ImageInsertRequest {
-    pub id: MemeTplId,
+    pub id: u32,
     pub mime_type: String,
     pub data: Vec<u8>,
 }
