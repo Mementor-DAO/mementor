@@ -12,8 +12,12 @@ fi
 
 . .env
 
-dfx canister create nft >/dev/null
-dfx canister create bot >/dev/null
+if [[ "$(dfx canister nft 2>&1 | grep Error)" != "" ]]; then
+  dfx canister create nft
+fi
+if [[ "$(dfx canister bot 2>&1 | grep Error)" != "" ]]; then
+  dfx canister create bot
+fi
 
 BOT_CANISTER_ID=$(dfx canister id bot)
 LOGO_URL="http://$BOT_CANISTER_ID.raw.localhost:8080/assets/nft_logo.png"

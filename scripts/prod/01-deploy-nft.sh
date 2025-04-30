@@ -12,8 +12,12 @@ fi
 
 . .env
 
-dfx canister create nft --ic --subnet $SUBNET --identity deployer >/dev/null
-dfx canister create bot --ic --subnet $SUBNET --identity deployer >/dev/null
+if [[ "$(dfx canister nft 2>&1 | grep Error)" != "" ]]; then
+  dfx canister create nft --ic --subnet $SUBNET --identity deployer
+fi
+if [[ "$(dfx canister bot 2>&1 | grep Error)" != "" ]]; then
+  dfx canister create bot --ic --subnet $SUBNET --identity deployer
+fi
 
 BOT_CANISTER_ID=$(dfx canister id bot --ic)
 LOGO_URL="http://$BOT_CANISTER_ID.raw.icp0.io/assets/nft_logo.png"

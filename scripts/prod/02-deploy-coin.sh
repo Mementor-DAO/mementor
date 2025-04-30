@@ -10,9 +10,15 @@ fi
 
 . .env
 
-dfx canister create bot --ic --subnet $SUBNET --identity deployer >/dev/null
-dfx canister create minter --ic --subnet $SUBNET --identity deployer >/dev/null
-dfx canister create coin --ic --subnet $SUBNET --identity deployer >/dev/null
+if [[ "$(dfx canister bot 2>&1 | grep Error)" != "" ]]; then
+  dfx canister create bot --ic --subnet $SUBNET --identity deployer
+fi
+if [[ "$(dfx canister minter 2>&1 | grep Error)" != "" ]]; then
+  dfx canister create minter --ic --subnet $SUBNET --identity deployer
+fi
+if [[ "$(dfx canister coin 2>&1 | grep Error)" != "" ]]; then
+  dfx canister create coin --ic --subnet $SUBNET --identity deployer
+fi
 
 ./scripts/utils/download-dfinity-wasm.sh icrc1_ledger ic-icrc1-ledger
 

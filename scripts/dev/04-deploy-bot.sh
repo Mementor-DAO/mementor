@@ -14,7 +14,9 @@ fi
 
 ASSETS_DATA_DIR=./packages/assets/data
 
-dfx canister create bot >/dev/null
+if [[ "$(dfx canister id bot 2>&1 | grep Error)" != "" ]]; then
+  dfx canister create bot
+fi
 
 ADMIN_PRINCIPAL=$(dfx identity get-principal)
 BOT_CANISTER_ID=$(dfx canister id bot)

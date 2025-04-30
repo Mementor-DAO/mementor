@@ -14,7 +14,9 @@ fi
 
 ASSETS_DATA_DIR=./packages/assets/data
 
-dfx canister create bot --ic --subnet $SUBNET --identity deployer >/dev/null
+if [[ "$(dfx canister bot 2>&1 | grep Error)" != "" ]]; then
+  dfx canister create bot --ic --subnet $SUBNET --identity deployer
+fi
 
 ADMIN_PRINCIPAL=$(dfx identity get-principal --identity deployer)
 BOT_CANISTER_ID=$(dfx canister id bot --ic)

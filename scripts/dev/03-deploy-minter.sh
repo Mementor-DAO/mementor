@@ -12,7 +12,9 @@ fi
 
 . .env
 
-dfx canister create minter >/dev/null
+if [[ "$(dfx canister minter 2>&1 | grep Error)" != "" ]]; then
+  dfx canister create minter
+fi
 
 ADMIN_PRINCIPAL=$(dfx identity get-principal)
 COIN_CANISTER_ID=$(dfx canister id coin)

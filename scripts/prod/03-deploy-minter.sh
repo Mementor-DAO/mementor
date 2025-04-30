@@ -12,7 +12,9 @@ fi
 
 . .env
 
-dfx canister create minter --ic --subnet $SUBNET --identity deployer >/dev/null
+if [[ "$(dfx canister minter 2>&1 | grep Error)" != "" ]]; then
+  dfx canister create minter --ic --subnet $SUBNET --identity deployer
+fi
 
 ADMIN_PRINCIPAL=$(dfx identity get-principal --identity deployer)
 COIN_CANISTER_ID=$(dfx canister id coin --ic)
