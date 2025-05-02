@@ -99,7 +99,7 @@ impl CommandHandler<CanisterRuntime> for MemeCli {
                     Commands::Suggest { id, mood, topic } => {
                         Self::suggest_meme(
                             id, 
-                            mood.unwrap_or("happy".to_string()), 
+                            mood.unwrap_or("funny".to_string()), 
                             topic.unwrap_or("crypto".to_string()), 
                             user_id, 
                             &client

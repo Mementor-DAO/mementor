@@ -35,7 +35,7 @@ pub const MEMES_PER_PAGE: usize = 4;
 const MAX_PAGES: usize = 10;
 const FONT_SIZE: f32 = 32.0; //px
 const PADDING: usize = 8;
-const CAPTION_CREATE_PROMPT: &str = "You're a meme expert. Given a meme with this image description: \"{description}\" and this usage suggestion: \"{usage}\", create {num_boxes} short captions, each with no more than 3 words, that together tell a {mood} story about {topic}. Be funny and creative! Return only the captions as a JSON array of strings";
+const CAPTION_CREATE_PROMPT: &str = "You're a meme expert. Given a meme with this image description: \"{description}\" and this usage suggestion: \"{usage}\", create {num_boxes} short captions, each with no more than 5 words, that together tell a {mood} story about {topic}. Be funny and creative! Return only the captions as a JSON array of strings";
 
 pub type MemeTplId = u32;
 

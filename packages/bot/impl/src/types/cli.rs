@@ -33,9 +33,9 @@ pub enum Commands {
     Suggest {
         #[arg(help = "Numeric id of the meme template as returned by '/meme search'")]
         id: u32,
-        #[arg(help = "The story mood to use, e.g.: happy, sad, weird, silly, etc (default happy)")]
+        #[arg(help = "The story mood to use, e.g.: happy, sad, funny, weird, silly, etc (default funny)")]
         mood: Option<String>,
-        #[arg(help = "The story topic, e.g.: crypto, cats, cars, etc (default crypto)")]
+        #[arg(help = "The story topic, e.g.: crypto, cats, robots, etc (default crypto)")]
         topic: Option<String>,
     },
     #[command(about = "Post a meme previously created with '/meme gen or suggest'")]
