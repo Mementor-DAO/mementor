@@ -1,12 +1,12 @@
-use std::{cell::RefCell, io::Cursor};
+use std::cell::RefCell;
 use ic_stable_structures::BTreeMap;
-use image::{imageops, RgbaImage};
+use image::RgbaImage;
 use crate::{
     memory::{get_images_memory, Memory}, 
     services::meme::MemeTplId, 
     types::image::{
-        Image, IMAGE_FORMAT, IMAGE_HEIGHT, IMAGE_WIDTH
-    }, utils::image::rgba8_to_rgb8
+        Image, IMAGE_FORMAT
+    }
 };
 
 thread_local! {
@@ -32,40 +32,6 @@ impl ImageStorage {
                 }
             );
         });
-    }
-
-    pub fn resize(
-        img: &RgbaImage,
-        width: u32,
-        height: u32
-    ) -> RgbaImage {
-        let w = img.width();
-        let h = img.height();
-
-        if w == width && h == height {
-            img.clone()
-        } else {
-            if w >= h {
-                let h = (height as f32 * (h as f32 / w as f32)) as u32;
-                imageops::resize(img, width, h, imageops::FilterType::Nearest)
-            }
-            else {
-                let w = (width as f32 * (w as f32 / h as f32)) as u32;
-                imageops::resize(img, w, height, imageops::FilterType::Nearest)
-            }
-        }
-    }
-
-    pub fn process(
-        img: &RgbaImage
-    ) -> Result<Vec<u8>, String> {
-        let rgb_img = rgba8_to_rgb8(&Self::resize(img, IMAGE_WIDTH, IMAGE_HEIGHT));
-
-        let mut jpg: Vec<u8> = Vec::new();
-        rgb_img.write_to(&mut Cursor::new(&mut jpg), IMAGE_FORMAT)
-            .map_err(|e| e.to_string())?;
-
-        Ok(jpg)
     }
 
     pub fn load(

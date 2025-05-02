@@ -1,5 +1,5 @@
 use std::io::Cursor;
-use image::{ImageBuffer, ImageFormat, Rgb, RgbImage, RgbaImage};
+use image::{imageops, ImageBuffer, ImageFormat, Rgb, RgbImage, RgbaImage};
 use oc_bots_sdk::types::ThumbnailData;
 
 pub fn create_thumbnail(
@@ -38,3 +38,26 @@ pub fn rgba8_to_rgb8(
 
     dst
 }
+
+pub fn resize(
+    img: &RgbaImage,
+    width: u32,
+    height: u32
+) -> RgbaImage {
+    let w = img.width();
+    let h = img.height();
+
+    if w == width && h == height {
+        img.clone()
+    } else {
+        if w >= h {
+            let h = (height as f32 * (h as f32 / w as f32)) as u32;
+            imageops::resize(img, width, h, imageops::FilterType::Nearest)
+        }
+        else {
+            let w = (width as f32 * (w as f32 / h as f32)) as u32;
+            imageops::resize(img, w, height, imageops::FilterType::Nearest)
+        }
+    }
+}
+

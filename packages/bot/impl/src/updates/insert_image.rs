@@ -1,3 +1,4 @@
+use std::io::Cursor;
 use image::RgbaImage;
 use oc_bots_sdk_canister::env;
 use bot_api::insert_image::{
@@ -9,10 +10,17 @@ use crate::{
         thumb::ThumbStorage
     }, 
     types::{
-        image::IMAGE_MAX_SIZE, 
+        image::{
+            IMAGE_FORMAT, IMAGE_HEIGHT, 
+            IMAGE_MAX_SIZE, IMAGE_WIDTH
+        }, 
         thumb::THUMB_MAX_SIZE
     }, 
-    utils::out_font::OutlinedFont
+    utils::{
+        image::{resize, rgba8_to_rgb8}, 
+        out_font::OutlinedFont, 
+        thumb::gen_thumb
+    }
 };
 
 #[ic_cdk::update]
@@ -29,7 +37,7 @@ pub async fn insert_image(
                 s.load(&args.id).cloned().unwrap()
             });
     
-            match OutlinedFont::roboto(|font| ThumbStorage::gen_thumb(&img, &meme, font)) {
+            match OutlinedFont::roboto(|font| gen_thumb(&img, &meme, font)) {
                 Ok(buf) => {
                     if buf.len() as u32 > THUMB_MAX_SIZE {
                         return ImageInsertResponse::ThumbSizeTooBig;
@@ -45,7 +53,7 @@ pub async fn insert_image(
                 }
             }
 
-            let size = match ImageStorage::process(&img) {
+            let size = match process(&img) {
                 Ok(buf) => {
                     if buf.len() as u32 > IMAGE_MAX_SIZE {
                         return ImageInsertResponse::ImageSizeTooBig;
@@ -82,3 +90,16 @@ fn load_image(
         Err(_) => None,
     }
 }
+
+fn process(
+    img: &RgbaImage
+) -> Result<Vec<u8>, String> {
+    let rgb_img = rgba8_to_rgb8(&resize(img, IMAGE_WIDTH, IMAGE_HEIGHT));
+
+    let mut jpg: Vec<u8> = Vec::new();
+    rgb_img.write_to(&mut Cursor::new(&mut jpg), IMAGE_FORMAT)
+        .map_err(|e| e.to_string())?;
+
+    Ok(jpg)
+}
+

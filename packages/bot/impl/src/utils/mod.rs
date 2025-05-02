@@ -3,6 +3,7 @@ pub mod rng;
 pub mod tardir;
 pub mod full_text_indexer;
 pub mod image;
+pub mod thumb;
 pub mod ic;
 pub mod oc;
 pub mod out_font;

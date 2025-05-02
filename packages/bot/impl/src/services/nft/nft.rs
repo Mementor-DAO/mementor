@@ -13,7 +13,6 @@ use crate::{
     storage::{
         blob, 
         event::EventStorage, 
-        image::ImageStorage, 
         nft::NftStorage, 
         user::UserStorage
     }, 
@@ -29,6 +28,7 @@ use crate::{
     }, 
     utils::{
         canvas::{Canvas, Point}, 
+        image::resize, 
         nat::nat_to_u128, 
         oc, 
         out_font::OutlinedFont
@@ -301,7 +301,7 @@ impl NftService {
                     .map_err(|e| e.to_string())?
                     .to_rgba8();
                 
-                let img = ImageStorage::resize(
+                let img = resize(
                     &img, PREVIEW_IMG_WIDTH as _, PREVIEW_IMG_HEIGHT as _
                 );
 
