@@ -1078,6 +1078,7 @@ impl MemeCli {
             s.clone()
         });
 
+        let canister_id = nft_service.col.canister_id.to_text();
         let minting_cost = nft_service.calc_minting_cost();
         let min_reactions = nft_service.calc_min_reactions();
         //let min_chat_members = nft_service.min_chat_members();
@@ -1085,7 +1086,8 @@ impl MemeCli {
         let total_supply = NftStorage::size();
 
         let text = format!(
-            "**MEME NFT Status**  \n- minting cost: **{:.8} ICP**  \n- min reactions: {}  \n- supply: {}/{}  \n",
+            "**MEME NFT Status**  \n- canister id: {}  \n- minting cost: **{:.8} ICP**  \n- min reactions: {}  \n- supply: {}/{}  \n",
+            canister_id,
             minting_cost as f32 / 1_00000000.0,
             min_reactions,
             total_supply,
