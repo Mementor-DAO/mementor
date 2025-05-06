@@ -76,7 +76,7 @@ const AppHeader = (props: Props) => {
                     <Group sx={{ height: '100%' }} spacing={0} className={classes.hiddenMobile}>
 
                         <a href="#" className={classes.link}>
-                            <img src={logo} />
+                            <img src={logo} height="60" />
                         </a>
 
                         <a href="#/nft" className={classes.link}>

@@ -89,7 +89,7 @@ const Landing = () => {
                     <span className={classes.highlight}>Create</span> memes, <span className={classes.highlight}>mint</span> them as exclusive Meme NFTs, and <span className={classes.highlight}>earn</span> Meme coins in return!
                     </Title>
                     <Text color="dimmed" mt="md" className={classes.subtitle}>
-                        <b>Mementor</b> is a decentralized web3 <Link to="https://oc.app/" target="blank">Open Chat</Link> bot where users can create and post memes, mint them as NFTs, and receive coins as rewards.
+                        <b>Mementor</b> is a decentralized web3 <b><Link to="https://oc.app/" target="blank">Open Chat</Link></b> bot where users can create and post memes, mint them as NFTs, and receive coins as rewards. Read more details in our <b><Link to="/faq">FAQ</Link></b>!
                     </Text>
 
                     <List

@@ -9,6 +9,7 @@ import loadingImage from "@assets/loading.svg";
 import Nft from "@views/nft/Nft";
 import Coin from "@views/coin/Coin";
 import Whitepaper from "@views/whitepaper/Whitepaper";
+import Faq from "@views/faq/Faq";
 
 interface Props {
 }
@@ -50,6 +51,7 @@ const Home = (props: Props) => {
                         <Route path="/nft" element={<Nft />} />
                         <Route path="/coin" element={<Coin />} />
                         <Route path="/whitepaper" element={<Whitepaper />} />
+                        <Route path="/Faq" element={<Faq />} />
                     </Routes>
                 </Container>
             </AppShell>

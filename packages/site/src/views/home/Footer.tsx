@@ -1,6 +1,6 @@
 import React from 'react';
 import { Anchor, Box, Center, Container, Divider, Grid, Space, Stack, Text } from '@mantine/core';
-import { IconBook, IconBrandGithubFilled, IconBrandTwitterFilled, IconCoin, IconLock, IconPhoto } from '@tabler/icons-react';
+import { IconBook, IconBrandGithubFilled, IconBrandTwitterFilled, IconCoin, IconHelp, IconLock, IconPhoto } from '@tabler/icons-react';
 import poweredBy from "@assets/powered-by.svg";
 import openchat from "@assets/openchat.svg";
 
@@ -26,19 +26,16 @@ const AppFooter = (props: Props) => {
             <Grid pt="md">
                 <Grid.Col span={4}>
                     <Stack>
-                        <Anchor href="#/nft">
-                            <IconPhoto size="1rem" />&nbsp;Meme NFT
+                        <Anchor href="#/faq">
+                            <IconHelp size="1rem" />&nbsp;FAQ
                         </Anchor>
-                        <Anchor href="#/coin">
-                            <IconCoin size="1rem" />&nbsp;Meme Coin 
+                        <Anchor href="#/policies">
+                            <IconBook size="1rem" />&nbsp;Policies
                         </Anchor>
                     </Stack>
                 </Grid.Col>
                 <Grid.Col span={4}>
                     <Stack>
-                        <Anchor href="#/policies">
-                            <IconBook size="1rem" />&nbsp;Policies
-                        </Anchor>
                         <Anchor href="#/privacy">
                             <IconLock size="1rem" />&nbsp;Privacy
                         </Anchor>
