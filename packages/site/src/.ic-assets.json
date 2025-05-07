@@ -4,6 +4,11 @@
       "ignore": false
     },
     {
+      "match": "**/*",
+      "security_policy": "standard",
+      "disable_security_policy_warning": true
+    },
+    {
       "match": ".well-known/ii-alternative-origins",
       "headers": {
         "Access-Control-Allow-Origin": "*",
