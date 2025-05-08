@@ -29,7 +29,7 @@ use oc_bots_sdk_canister::{env, CanisterRuntime};
 use crate::{
     services::{
         meme::{self, MemeService},
-        nft::{self, NftService, TOKENS_PER_PAGE, CHECK_POH_AFTER}, 
+        nft::{self, NftService, TOKENS_PER_PAGE}, 
         wallet::wallet::WalletService
     }, 
     state, 
@@ -629,23 +629,19 @@ impl MemeCli {
             );
         }
 
-        let total_supply = nft_service.total_supply();
-
-        if total_supply > CHECK_POH_AFTER {
-            // check if user has proof of uniqueness
-            let has_poh = match get_chat_user_profile(chat, &user_id).await {
-                Some(profile) => {
-                    !profile.user_type.is_bot() &&
-                        profile.unique_person_proof.is_some()
-                },
-                None => {
-                    false
-                }
-            };
-
-            if !has_poh {
-                return Err(format!("You haven't proven to be a unique individual yet. Please do that first on Open Chat"));
+        // check if user has proof of uniqueness
+        let has_poh = match get_chat_user_profile(chat, &user_id).await {
+            Some(profile) => {
+                !profile.user_type.is_bot() &&
+                    profile.unique_person_proof.is_some()
+            },
+            None => {
+                false
             }
+        };
+
+        if !has_poh {
+            return Err(format!("You haven't proven to be a unique individual yet. Please do that first on Open Chat"));
         }
 
         // check if group/channel has enough members

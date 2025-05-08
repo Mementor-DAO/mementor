@@ -169,9 +169,15 @@ const Faq = () => {
                                         <li>
                                             Meme NFT supports:<br/>
                                             <ul>
-                                                <li><Link to="https://github.com/dfinity/ICRC/blob/icrc_7_and_37/ICRCs/ICRC-7/ICRC-7.md" target='blank'>ICRC-7</Link> <small>Minimal Non-Fungible Token (NFT) Standard</small></li>
-                                                <li><Link to="https://github.com/dfinity/ICRC/blob/icrc_7_and_37/ICRCs/ICRC-37/ICRC-37.md" target='blank'>ICRC-37</Link> <small>Approval Support for the Minimal Non-Fungible Token (NFT) Standard</small></li>
-                                                <li><Link to="https://github.com/dfinity/ICRC-1/blob/main/standards/ICRC-3/README.md" target='blank'>ICRC-3</Link> <small>Block Log</small></li>
+                                                <li>
+                                                    <Link to="https://github.com/dfinity/ICRC/blob/icrc_7_and_37/ICRCs/ICRC-7/ICRC-7.md" target='blank'>ICRC-7</Link> <small>Minimal Non-Fungible Token (NFT) Standard</small>
+                                                </li>
+                                                <li>
+                                                    <Link to="https://github.com/dfinity/ICRC/blob/icrc_7_and_37/ICRCs/ICRC-37/ICRC-37.md" target='blank'>ICRC-37</Link> <small>Approval Support for the Minimal Non-Fungible Token (NFT) Standard</small>
+                                                </li>
+                                                <li>
+                                                    <Link to="https://github.com/dfinity/ICRC-1/blob/main/standards/ICRC-3/README.md" target='blank'>ICRC-3</Link> <small>Block Log</small>
+                                                </li>
                                             </ul>
                                         </li>
                                     </ol>
@@ -186,13 +192,13 @@ const Faq = () => {
                                 <Container>
                                     <ol>
                                         <li>
-                                            The post must have at least the number of reactions, from Open Chat users with proof of humanity, returned by <small><b>/meme nft status</b></small>.
+                                            The post must have at least the number of <b>reactions</b>, from Open Chat users with <b>proof of humanity</b>, returned by <small><b>/meme nft status</b></small>.
                                         </li>
                                         <li>
-                                            The channel/group where the meme was posted must have at least <b>50</b> members.
+                                            The channel or group where the meme was posted must have <b>at least 50 members</b>.
                                         </li>
                                         <li>
-                                            The balance in your Mementor wallet must be enough to cover the minting cost, returned also by <small><b>/meme nft status</b></small>.
+                                            The balance in your Mementor wallet, displayed by <small><b>/meme wallet balance</b></small>, must be enough to cover the minting cost, returned also by <small><b>/meme nft status</b></small>.
                                         </li>
                                         <li>
                                             The MEME NFT max supply must be bellow the total supply. That information is also returned by <small><b>/meme nft status</b></small>.

@@ -37,8 +37,6 @@ use crate::{
 
 pub const TOKENS_PER_ROW: usize = 4;
 pub const TOKENS_PER_PAGE: usize = TOKENS_PER_ROW * 1;
-pub const CHECK_POH_AFTER: u32 = 100; // only check if user has proof of unique person after n tokens were minted
-
 const PADDING: usize = 8;
 const PREVIEW_IMG_WIDTH: usize = 256;
 const PREVIEW_IMG_HEIGHT: usize = 256;
@@ -50,12 +48,6 @@ pub struct NftService {
 }
 
 impl NftService {
-    pub fn total_supply(
-        &self
-    ) -> u32 {
-        NftStorage::size() as u32
-    }
-    
     pub fn update(
         &mut self,
         config: NftCollectionConfig,
