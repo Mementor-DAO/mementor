@@ -43,16 +43,7 @@ const AppFooter = (props: Props) => {
                 </Grid.Col>
                 <Grid.Col span={4}>
                     <Grid>
-                        <Grid.Col span={4}>
-                            <Anchor 
-                                href="https://twitter.com/mementor_dao"
-                                target="_blank"
-                                title='twitter'
-                            >
-                                <IconBrandTwitterFilled size="2rem" />
-                            </Anchor>
-                        </Grid.Col>
-                        <Grid.Col span={4}>
+                        <Grid.Col span={6}>
                             <Anchor 
                                 href="https://oc.app/community/hgisd-iiaaa-aaaac-aqlrq-cai"
                                 target="_blank"
@@ -64,7 +55,7 @@ const AppFooter = (props: Props) => {
                                 />
                             </Anchor>
                         </Grid.Col>
-                        <Grid.Col span={4}>
+                        <Grid.Col span={6}>
                             <Anchor
                                 href="https://github.com/Mementor-DAO"
                                 target="_blank"
